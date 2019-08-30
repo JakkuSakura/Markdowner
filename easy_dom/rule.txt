@@ -1,0 +1,11 @@
+#note text is the root of a passage. it contains a list of blocks
+#def text
+#mem data ARRAY
+
+#grammar block{0,-1,push_into(data)}
+
+#end_def
+
+#def block
+#grammar char{1,1,replace_this()}
+#end_def

@@ -2,136 +2,144 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufReader, BufRead};
 
-use std::rc::Rc;
-use std::cell::{RefCell, RefMut};
 use std::str::FromStr;
 
-
 #[derive(Debug, PartialEq)]
-pub enum DynamicType<'a> {
-    STRING(&'a str),
+pub enum DType<'a> {
+    STRING(String),
     INTEGER(i32),
     FLOAT(f64),
-    POINTER(&'a DynamicType<'a>),
-    ARRAY(Vec<DynamicType<'a>>),
+    CHAR(char),
+    POINTER(&'a DType<'a>),
+    ARRAY(Vec<DType<'a>>),
+    MAPPING(HashMap<String, DType<'a>>),
     NONE,
 }
 
-impl<'a> DynamicType<'a> {
-    fn as_str(&self) -> Option<&str> {
+impl<'a> DType<'a> {
+    fn from_str(s: &str) -> DType<'a> {
+        DType::STRING(s.to_string())
+    }
+    fn as_str(&self) -> Option<&String> {
         match self {
-            DynamicType::STRING(s) => Some(s),
+            DType::STRING(s) => Some(s),
             _ => None
         }
+    }
+    fn from_char(ch: char) -> DType<'a> {
+        DType::CHAR(ch)
+    }
+    fn as_char(&self) -> Option<char> {
+        match self {
+            DType::CHAR(c) => Some(*c),
+            _ => None
+        }
+    }
+    fn from_int(i: i32) -> DType<'a> {
+        DType::INTEGER(i)
     }
     fn as_int(&self) -> Option<i32> {
         match self {
-            DynamicType::INTEGER(i) => Some(*i),
+            DType::INTEGER(i) => Some(*i),
             _ => None
         }
     }
+    fn from_float(f: f64) -> DType<'a> {
+        DType::FLOAT(f)
+    }
+
     fn as_float(&self) -> Option<f64> {
         match self {
-            DynamicType::FLOAT(f) => Some(*f),
+            DType::FLOAT(f) => Some(*f),
             _ => None
         }
     }
-    fn as_pointer(&self) -> Option<&'a DynamicType> {
-        match self {
-            DynamicType::POINTER(p) => Some(p),
-            _ => None
-        }
+    fn from_pointer(p: &'a DType) -> DType<'a> {
+        DType::POINTER(p)
     }
-    fn as_array(&self) -> Option<&Vec<DynamicType>> {
-        match self {
-            DynamicType::ARRAY(a) => Some(a),
-            _ => None
-        }
-    }
-}
 
-#[derive(Debug, PartialEq)]
-pub enum DynamicNode<'a> {
-    NODE { name: String, properties: HashMap<&'a str, DynamicType<'a>> },
-    NONE,
-}
-
-impl<'a> DynamicNode<'a> {
-    pub fn new(name: String) -> DynamicNode<'a> {
-        DynamicNode::NODE { name, properties: HashMap::new() }
-    }
-    pub fn get(&self, key: &str) -> &DynamicType<'a> {
+    fn as_pointer(&self) -> Option<&'a DType> {
         match self {
-            DynamicNode::NODE { name, properties } => {
-                match properties.get(key) {
+            DType::POINTER(p) => Some(p),
+            _ => None
+        }
+    }
+
+    fn from_array(a: Vec<DType<'a>>) -> DType<'a> {
+        DType::ARRAY(a)
+    }
+
+    fn as_array(&self) -> Option<&Vec<DType>> {
+        match self {
+            DType::ARRAY(a) => Some(a),
+            _ => None
+        }
+    }
+    fn new_map() -> DType<'a> {
+        DType::MAPPING(Default::default())
+    }
+    fn from_map(a: HashMap<String, DType<'a>>) -> DType<'a> {
+        DType::MAPPING(a)
+    }
+
+    fn as_map(&self) -> Option<&Vec<DType>> {
+        match self {
+            DType::ARRAY(a) => Some(a),
+            _ => None
+        }
+    }
+    fn as_map_mut(&mut self) -> Option<&mut Vec<DType<'a>>> {
+        match self {
+            DType::ARRAY(a) => Some(a),
+            _ => None
+        }
+    }
+
+    pub fn get(&self, key: &str) -> &DType<'a> {
+        match self {
+            DType::MAPPING(m) => {
+                match m.get(key) {
                     Some(x) => x,
-                    None => &DynamicType::NONE
+                    None => &DType::NONE
                 }
             }
-            _ => panic!("This DynamicNode is NONE")
+            _ => &DType::NONE
         }
     }
 
-
-    pub fn set(&mut self, key: &'a str, val: DynamicType<'a>) {
+    pub fn set(&mut self, key: &str, val: DType<'a>) {
         match self {
-            DynamicNode::NODE { name, properties } => {
-                properties.insert(key, val);
+            DType::MAPPING(m) => {
+                m.insert(key.to_string(), val);
             }
-            _ => panic!("This DynamicNode is NONE. Cannot set kay-value mapping")
+            _ => panic!("Can not insert key-value pair into non mapping type")
         }
     }
 }
 
 #[derive(Debug)]
-struct Action {
-    name: String,
-    args: Vec<String>,
-}
-
-impl Action {
-    pub fn from_str(s: &str) -> Action {
-        let parenthesis_index = s.find("(").unwrap();
-        let args = s[parenthesis_index + 1..s.len() - 1].to_string();
-        let spt: Vec<&str> = args.split(",").collect();
-        let mut vec: Vec<String> = vec![];
-        if spt[0] != "" {
-            for s in spt {
-                vec.push(s.to_string());
-            }
-        }
-        let action = Action { name: s[0..parenthesis_index].to_string(), args: vec };
-        action
-    }
-}
-
-#[derive(Debug)]
-struct Combination {
+struct Pattern {
     name: String,
     rep_least: i32,
     rep_most: i32,
-    action: Action,
 }
 
-impl Combination {
-    pub fn new() -> Combination {
-        Combination {
+impl Pattern {
+    pub fn new() -> Pattern {
+        Pattern {
             name: "undefined".to_string(),
             rep_least: 0,
             rep_most: 0,
-            action: Action { name: "".to_string(), args: vec![] },
         }
     }
-    pub fn from_str(s: &str) -> Combination {
-        let mut cm = Combination::new();
+    pub fn from_str(s: &str) -> Pattern {
+        let mut cm = Pattern::new();
 
         let bracket = s.find('{').unwrap();
         cm.name = s[0..bracket].to_string();
         let spt: Vec<&str> = s[bracket + 1..s.len() - 1].split(",").collect();
         cm.rep_least = i32::from_str(spt[0]).unwrap();
         cm.rep_most = i32::from_str(spt[1]).unwrap();
-// todo multi args support
-        cm.action = Action::from_str(&spt[2].to_string());
         cm
     }
 }
@@ -139,12 +147,19 @@ impl Combination {
 #[derive(Debug)]
 struct Grammar {
     node_name: String,
-    combinations: Vec<Combination>,
+    patterns: Vec<Pattern>,
+    action: String,
+    action_arg: String,
 }
 
 impl Grammar {
-    pub fn new(node_name: String) -> Grammar {
-        Grammar { node_name, combinations: vec![] }
+    pub fn new(node_name: &str, action: &str, action_arg: &str) -> Grammar {
+        Grammar {
+            node_name: node_name.to_string(),
+            patterns: vec![],
+            action: action.to_string(),
+            action_arg: action_arg.to_string(),
+        }
     }
 }
 
@@ -152,7 +167,6 @@ impl Grammar {
 #[derive(Debug)]
 struct Rule {
     name: String,
-    mem: Vec<(String, String)>,
     grammars: Vec<Grammar>,
 }
 
@@ -160,7 +174,6 @@ impl Rule {
     pub fn new() -> Rule {
         Rule {
             name: "undefined".to_string(),
-            mem: vec![],
             grammars: vec![],
         }
     }
@@ -168,9 +181,11 @@ impl Rule {
 
 struct DomBuilder<'a> {
     raw_text: &'a str,
-    builtin_actions: HashMap<String, fn(&Action, RefMut<DynamicNode<'a>>, &DynamicNode<'a>)>,
-    // action_name, function (action, root_node, current_node)
-    builtin_combinations: HashMap<String, fn(&str, pos) -> (DynamicNode<'a>, isize)>,
+    // action_name, function (arg, matched node) -> new node
+    builtin_actions: HashMap<String, fn(&str, Vec<DType<'a>>) -> DType<'a>>,
+
+    // pattern_name, function (text, pos) -> (node, new pos) if matched
+    builtin_patterns: HashMap<String, fn(&str, isize) -> Option<(DType<'a>, isize)>>,
     rules: Vec<Rule>,
 }
 
@@ -179,66 +194,84 @@ impl<'a> DomBuilder<'a> {
         DomBuilder {
             raw_text: "",
             builtin_actions: Default::default(),
-            builtin_combinations: Default::default(),
+            builtin_patterns: Default::default(),
             rules: vec![],
         }
     }
-    fn do_action(&self, action: &Action, node: RefMut<DynamicNode<'a>>, matched: &DynamicNode<'a>) {
-        let func = self.builtin_actions.get(action.name.as_str()).unwrap();
-        func(action, node, matched);
-    }
 
-    fn match_combination(&self, comb: &Combination, token_pos: isize) -> (DynamicNode<'a>, isize) {
-        match self.builtin_combinations.get(&comb.name) {
+
+    fn find_rule(&self, name: &str) -> Option<&Rule> {
+        for e in &self.rules {
+            if &e.name == name {
+                return Some(e);
+            }
+        }
+        return None;
+    }
+    fn match_pattern(&self, pt: &Pattern, token_pos: isize) -> Option<(DType<'a>, isize)> {
+        match self.builtin_patterns.get(&pt.name) {
             Some(f) => { f(self.raw_text, token_pos) }
             None => {
-                match self.rules.get(&comb.name) {
+                match self.find_rule(&pt.name) {
                     Some(rule) => {
-                        unimplemented!();
-
-                    },
+                        for e in &rule.grammars {
+                            let result = self.match_grammar(e, token_pos);
+                            if result != None {
+                                return result;
+                            }
+                        }
+                        None
+                    }
                     None => {
-                        panic!("Did not define built-in combination or rule: {}", comb.name);
+                        panic!("Did not define built-in combination or rule: {}", pt.name);
                     }
                 }
             }
         }
     }
 
-    fn match_grammar(&self, grammar: &Grammar, token_pos: isize) -> (DynamicNode<'a>, isize) {
+    fn match_grammar(&self, grammar: &Grammar, token_pos: isize) -> Option<(DType<'a>, isize)> {
         let mut pos = token_pos;
-        let node = RefCell::new(DynamicNode::new(grammar.node_name.to_string()));
-        for e in &grammar.combinations {
+        let mut matched: Vec<DType<'a>> = vec![];
+
+        for e in &grammar.patterns {
             let mut rep = 0;
             let mut new_new_pos = pos;
             // what the hell?
 
-            while rep < e.rep_most {
-                let (matched_comb, new_pos) = self.match_combination(&e, new_new_pos);
-                if matched_comb == DynamicNode::NONE {
-                    break;
+            while rep < (e.rep_most as u32) {
+                match self.match_pattern(&e, new_new_pos) {
+                    Some((matched_pt, new_pos)) => {
+                        rep += 1;
+                        new_new_pos = new_pos;
+                        matched.push(matched_pt);
+                    }
+                    None => { break; }
                 }
-                rep += 1;
-                new_new_pos = new_pos;
-                self.do_action(&e.action, node.borrow_mut(), &matched_comb);
             }
-
-            if rep < e.rep_least || rep > e.rep_most {
-                return (DynamicNode::NONE, new_new_pos);
+            if rep < e.rep_least as u32 || rep > e.rep_most as u32 {
+                return Option::None;
             }
             pos = new_new_pos;
         }
-        return (node.into_inner(), pos);
+
+        let action = self.builtin_actions.get(&grammar.action).unwrap();
+        let new_node = action(&grammar.action_arg, matched);
+        return Option::Some((new_node, pos));
     }
 }
 
 fn process_grammar(rule: &mut Rule, line: &str) {
     let args: Vec<&str> = line.split(" ").collect();
-    let mut gr = Grammar::new(rule.name.clone());
-    for i in 1..args.len() {
+    let action_spt_line = args[1].find('(').unwrap();
+
+    let mut gr = Grammar::new(&rule.name,
+                              &args[1][0..action_spt_line],
+                              &args[1][action_spt_line + 1..args[1].len() - 1]);
+    for i in 2..args.len() {
         let par = args[i];
-        let comb = Combination::from_str(&par.to_string());
-        gr.combinations.push(comb);
+        let comb = Pattern::from_str(&par.to_string());
+        gr.patterns.push(comb);
     }
     rule.grammars.push(gr);
 }
@@ -255,7 +288,6 @@ fn read_rules(filename: &str) -> Vec<Rule> {
         match spt[0] {
             "#note" => { /* ignored*/ }
             "#def" => { rule.name = spt[1].to_string(); }
-            "#mem" => { rule.mem.push((spt[1].to_string(), spt[2].to_string())) }
             "#grammar" => { process_grammar(&mut rule, &line); }
             "#end_def" => {
                 rules.push(rule);
@@ -270,23 +302,32 @@ fn read_rules(filename: &str) -> Vec<Rule> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{DynamicNode, DynamicType, DomBuilder};
+    use crate::{DType, DomBuilder};
 
     #[test]
     fn it_works() {
-        let mut node = DynamicNode::new("hello".to_string());
-        node.set("fuck", DynamicType::INTEGER(233));
-        assert_eq!(*node.get("fuck"), DynamicType::INTEGER(233));
-        assert_ne!(*node.get("fuck"), DynamicType::INTEGER(2334));
-        assert_eq!(*node.get("Fuck"), DynamicType::NONE);
-        node.set("fuck", DynamicType::INTEGER(2334));
-        assert_eq!(*node.get("fuck"), DynamicType::INTEGER(2334));
+        let mut node = DType::new_map();
+        node.set("fuck", DType::INTEGER(233));
+        assert_eq!(*node.get("fuck"), DType::INTEGER(233));
+        assert_ne!(*node.get("fuck"), DType::INTEGER(2334));
+        assert_eq!(*node.get("Fuck"), DType::NONE);
+        node.set("fuck", DType::INTEGER(2334));
+        assert_eq!(*node.get("fuck"), DType::INTEGER(2334));
     }
 
-    #[test]
-    fn read_rules() {
-        let rules = super::read_rules("rule.txt");
-//        panic!("{:#?}", rules);
+    fn is_char<'a>(text: &str, pos: isize) -> Option<(DType<'a>, isize)> {
+        if pos < text.len() as isize {
+            let mut node = DType::from_char(text.chars().nth(pos as usize).unwrap());
+            return Some((node, pos + 1));
+        }
+        return None;
+    }
+
+    fn add_list<'a>(arg: &str, v: Vec<DType<'a>>) -> DType<'a> {
+        let mut node = DType::new_map();
+        node.set("name", DType::from_str(arg));
+        node.set("matched", DType::from_array(v));
+        return node;
     }
 
     #[test]
@@ -294,5 +335,13 @@ mod tests {
         let rules = super::read_rules("rule.txt");
         let mut dom_builder = DomBuilder::new();
         dom_builder.rules = rules;
+        dom_builder.raw_text = "hello";
+        dom_builder.builtin_patterns.insert("char".to_string(), is_char);
+        dom_builder.builtin_actions.insert("add_list".to_string(), add_list);
+        let grammar = dom_builder.find_rule("text").unwrap().grammars.get(0).unwrap();
+        let result = dom_builder.match_grammar(grammar, 0);
+        assert_ne!(result, None);
+        let (root, pos) = result.unwrap();
+        println!("{:#?}", root);
     }
 }

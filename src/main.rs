@@ -1,5 +1,4 @@
 use std::io::{Read, stdin};
-
 mod parser;
 fn main() {
 

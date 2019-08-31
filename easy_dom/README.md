@@ -3,15 +3,10 @@ Easy_dom provides you with a easy approach to build up your own node tree automa
 write your rule file like I pasted below.
 
 ```text
-#note text is the root of a passage. it contains a list of blocks
 #def text
-#mem data ARRAY
-#grammar block{0,-1,push_into(data)}
+#grammar add_list(text) char{0,-1}
 #end_def
 
-#def block
-#grammar char{1,1,replace_this()}
-#end_def
 
 ```
 

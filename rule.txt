@@ -1,0 +1,17 @@
+passage: paragraph *
+paragraph: plain | hx | il | ol | quote | code_block | math_display
+plain: text $
+hx: "#"{x} text $
+ol: num "." text $
+ul: "- " text $
+quote: ">"{x} text
+code_block: "```" + language? + raw_text + "```"
+math_display: "$$" raw_text "$$"
+
+text: (bold | italic | deleted | code_inline | math_inline | char) *
+
+bold: "**" text "**"
+italic: "*" text "*"
+deleted: "~~" text "~~"
+code_inline: "'" raw_text(no newline) "'"
+math_inline: "$" raw_text(no newline) "$"

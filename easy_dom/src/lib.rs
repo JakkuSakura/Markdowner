@@ -120,6 +120,7 @@ impl<'a> DType<'a> {
 #[derive(Debug)]
 struct Pattern {
     name: String,
+    arg: String,
     rep_least: i32,
     rep_most: i32,
 }
@@ -128,6 +129,7 @@ impl Pattern {
     pub fn new() -> Pattern {
         Pattern {
             name: "undefined".to_string(),
+            arg: "".to_string(),
             rep_least: 0,
             rep_most: 0,
         }
@@ -135,8 +137,13 @@ impl Pattern {
     pub fn from_str(s: &str) -> Pattern {
         let mut cm = Pattern::new();
 
+
+        let larg = s.find('(').unwrap();
+        let rarg = s.find(')').unwrap();
+        cm.name = s[0..larg].to_string();
+        cm.arg = s[larg+1..rarg].to_string();
+
         let bracket = s.find('{').unwrap();
-        cm.name = s[0..bracket].to_string();
         let spt: Vec<&str> = s[bracket + 1..s.len() - 1].split(",").collect();
         cm.rep_least = i32::from_str(spt[0]).unwrap();
         cm.rep_most = i32::from_str(spt[1]).unwrap();
@@ -184,8 +191,8 @@ struct DomBuilder<'a> {
     // action_name, function (arg, matched node) -> new node
     builtin_actions: HashMap<String, fn(&str, Vec<DType<'a>>) -> DType<'a>>,
 
-    // pattern_name, function (text, pos) -> (node, new pos) if matched
-    builtin_patterns: HashMap<String, fn(&str, isize) -> Option<(DType<'a>, isize)>>,
+    // pattern_name, function (arg, text, pos) -> (node, new pos) if matched
+    builtin_patterns: HashMap<String, fn(&str, &str, isize) -> Option<(DType<'a>, isize)>>,
     rules: Vec<Rule>,
 }
 
@@ -210,7 +217,7 @@ impl<'a> DomBuilder<'a> {
     }
     fn match_pattern(&self, pt: &Pattern, token_pos: isize) -> Option<(DType<'a>, isize)> {
         match self.builtin_patterns.get(&pt.name) {
-            Some(f) => { f(self.raw_text, token_pos) }
+            Some(f) => { f(&pt.arg, self.raw_text, token_pos) }
             None => {
                 match self.find_rule(&pt.name) {
                     Some(rule) => {
@@ -259,46 +266,45 @@ impl<'a> DomBuilder<'a> {
         let new_node = action(&grammar.action_arg, matched);
         return Option::Some((new_node, pos));
     }
-}
 
-fn process_grammar(rule: &mut Rule, line: &str) {
-    let args: Vec<&str> = line.split(" ").collect();
-    let action_spt_line = args[1].find('(').unwrap();
+    fn process_grammar(&self, rule: &mut Rule, line: &str) {
+        let args: Vec<&str> = line.split(" ").collect();
+        let action_spt_line = args[1].find('(').unwrap();
 
-    let mut gr = Grammar::new(&rule.name,
-                              &args[1][0..action_spt_line],
-                              &args[1][action_spt_line + 1..args[1].len() - 1]);
-    for i in 2..args.len() {
-        let par = args[i];
-        let comb = Pattern::from_str(&par.to_string());
-        gr.patterns.push(comb);
+        let mut gr = Grammar::new(&rule.name,
+                                  &args[1][0..action_spt_line],
+                                  &args[1][action_spt_line + 1..args[1].len() - 1]);
+        for i in 2..args.len() {
+            let par = args[i];
+            let comb = Pattern::from_str(&par.to_string());
+            gr.patterns.push(comb);
+        }
+        rule.grammars.push(gr);
     }
-    rule.grammars.push(gr);
-}
 
-fn read_rules(filename: &str) -> Vec<Rule> {
-    let file = File::open(filename).unwrap();
-    let reader = BufReader::new(file);
-    let mut rules = vec![];
-    let mut rule = Rule::new();
-    ;
-    for (index, line) in reader.lines().enumerate() {
-        let line = line.unwrap();
-        let spt: Vec<&str> = line.split(char::is_whitespace).collect();
-        match spt[0] {
-            "#note" => { /* ignored*/ }
-            "#def" => { rule.name = spt[1].to_string(); }
-            "#grammar" => { process_grammar(&mut rule, &line); }
-            "#end_def" => {
-                rules.push(rule);
-                rule = Rule::new();
+    fn read_rules(&mut self, filename: &str) {
+        let file = File::open(filename).unwrap();
+        let reader = BufReader::new(file);
+
+        let mut rule = Rule::new();
+        for (index, line) in reader.lines().enumerate() {
+            let line = line.unwrap();
+            let spt: Vec<&str> = line.split(char::is_whitespace).collect();
+            match spt[0] {
+                "#note" => { /* ignored*/ }
+                "#def" => { rule.name = spt[1].to_string(); }
+                "#grammar" => { self.process_grammar(&mut rule, &line); }
+                "#end_def" => {
+                    self.rules.push(rule);
+                    rule = Rule::new();
+                }
+                "" => {}
+                _ => { panic!("Can't resolve: {}", line); }
             }
-            "" => {}
-            _ => { panic!("Can't resolve: {}", line); }
         }
     }
-    return rules;
 }
+
 
 #[cfg(test)]
 mod tests {
@@ -315,9 +321,19 @@ mod tests {
         assert_eq!(*node.get("fuck"), DType::INTEGER(2334));
     }
 
-    fn is_char<'a>(text: &str, pos: isize) -> Option<(DType<'a>, isize)> {
+    fn is_char<'a>(arg: &str, text: &str, pos: isize) -> Option<(DType<'a>, isize)> {
         if pos < text.len() as isize {
-            let mut node = DType::from_char(text.chars().nth(pos as usize).unwrap());
+            let ch = text.chars().nth(pos as usize).unwrap();
+            if arg != "" || arg != "any" {
+                let mut s = String::new();
+                s.push('\'');
+                s.push(ch);
+                s.push('\'');
+                if &s != arg {
+                    return None;
+                }
+            }
+            let mut node = DType::from_char(ch);
             return Some((node, pos + 1));
         }
         return None;
@@ -332,9 +348,8 @@ mod tests {
 
     #[test]
     fn dom_builder() {
-        let rules = super::read_rules("rule.txt");
         let mut dom_builder = DomBuilder::new();
-        dom_builder.rules = rules;
+        dom_builder.read_rules("rule.txt");
         dom_builder.raw_text = "hello";
         dom_builder.builtin_patterns.insert("char".to_string(), is_char);
         dom_builder.builtin_actions.insert("add_list".to_string(), add_list);

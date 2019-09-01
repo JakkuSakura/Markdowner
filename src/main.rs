@@ -40,7 +40,7 @@ fn main() {
     let parser = parser::Parser { raw_text: input.into_bytes() };
     let mut buf: Vec<u8> = vec![];
     parser.parse(&mut buf);
-    let mut output = File::create("/dev/stdout").unwrap();
+    let mut output = File::create("temp/output.html").unwrap();
     output.write(buf.as_slice()).unwrap();
 
 }

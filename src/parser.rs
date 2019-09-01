@@ -1,10 +1,14 @@
 use std::any::{Any, TypeId};
+
+#[cfg(debug_assertions)]
 use std::cmp::{min, max};
 
 #[cfg(debug_assertions)]
 extern crate termcolor;
 
+#[cfg(debug_assertions)]
 use std::io::Write;
+#[cfg(debug_assertions)]
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
 trait Node: Any {
@@ -88,6 +92,17 @@ struct MathInline {
     formula: InnerBuffer
 }
 
+struct Image {
+    alt: InnerBuffer,
+    url: InnerBuffer,
+    title: InnerBuffer,
+}
+
+struct Url {
+    text: InnerBuffer,
+    url: InnerBuffer,
+    title: InnerBuffer,
+}
 
 impl Node for Passage {
     #[cfg(debug_assertions)]
@@ -365,6 +380,48 @@ impl Node for MathInline {
     }
 }
 
+impl Node for Image {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "Image"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
+        buf.push_str("<img src=\"");
+        buf.push_vec(&self.url);
+        buf.push_str("\" alt=\"");
+        buf.push_vec(&self.alt);
+        buf.push_str("\" title=\"");
+        buf.push_vec(&self.title);
+        buf.push_str("\">");
+    }
+
+    fn len(&self) -> i32 {
+        (self.alt.len() + self.url.len() + self.title.len()) as i32
+    }
+}
+
+impl Node for Url {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "Url"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
+        buf.push_str("<a href=\"");
+        buf.push_vec(&self.url);
+        buf.push_str("\" title=\"");
+        buf.push_vec(&self.title);
+        buf.push_str("\">");
+        buf.push_vec(&self.text);
+        buf.push_str("</a>");
+    }
+
+    fn len(&self) -> i32 {
+        (self.text.len() + self.url.len() + self.title.len()) as i32
+    }
+}
+
 impl Node for InnerByte {
     #[cfg(debug_assertions)]
     fn get_node_type(&self) -> &str {
@@ -407,6 +464,14 @@ fn show_slice(text: &InnerBuffer, begin: usize, end: usize, highlight_begin: usi
         }
     }
     println!();
+}
+
+struct GetUntilResult {
+    text: InnerBuffer,
+    pos: usize,
+    reached_target: bool,
+//    die_of_newline: bool,
+//    die_of_eof: bool,
 }
 
 /// every function that returns Option<(Node, usize)>
@@ -454,6 +519,54 @@ impl Parser {
             pos += 1;
         }
         return Some((num, pos));
+    }
+    fn get_until_pattern(&self, pos: usize, until: impl Fn(usize) -> Option<usize>, new_line: bool) -> GetUntilResult {
+        let mut text = InnerBuffer::new();
+        let mut pos = pos;
+        while pos < self.raw_text.len() {
+            if !new_line && self.is(pos, "\n") {
+                pos = self.check_eat(pos, "\n", 1);
+                return GetUntilResult {
+                    text,
+                    pos,
+                    reached_target: false,
+//                    die_of_newline: true,
+//                    die_of_eof: false,
+                };
+            }
+            match until(pos) {
+                Some(p) => {
+                    pos = p;
+                    return GetUntilResult {
+                        text,
+                        pos,
+                        reached_target: true,
+//                        die_of_newline: false,
+//                        die_of_eof: false,
+                    };
+                }
+                None => {}
+            }
+            text.push(self.raw_text[pos]);
+            pos = self.eat(pos);
+        }
+        return GetUntilResult {
+            text,
+            pos,
+            reached_target: false,
+//            die_of_newline: false,
+//            die_of_eof: true,
+        };
+    }
+    fn get_until(&self, pos: usize, until: &str, multi_lines: bool) -> GetUntilResult {
+        let judge = |pz: usize| {
+            if self.is(pz, until) {
+                Some(self.check_eat(pz, until, 1))
+            } else {
+                None
+            }
+        };
+        self.get_until_pattern(pos, judge, multi_lines)
     }
     fn get_char(&self, pos: usize) -> Option<InnerByte> {
         if pos >= self.raw_text.len() {
@@ -680,36 +793,20 @@ impl Parser {
                 }
                 None => lang = vec![]
             }
-            let mut text = InnerBuffer::new();
-            while pos < self.raw_text.len() {
-                if self.is(pos, "```") {
-                    pos = self.check_eat(pos, "```", 1);
-                    break;
-                }
-                text.push(self.raw_text[pos]);
-                pos = self.eat(pos);
-            }
-            return Some((CodeBlock { language: lang, text }, pos));
+            let result = self.get_until(pos, "```", true);
+            return Some((CodeBlock { language: lang, text: result.text }, result.pos));
         }
         return None;
     }
     fn math_display(&self, pos: usize) -> Option<(MathDisplay, usize)> {
         if self.is(pos, "$$") {
-            let mut pos = self.check_eat(pos, "$$", 1);
-            let mut text = InnerBuffer::new();
-            while pos < self.raw_text.len() {
-                if self.is(pos, "$$") {
-                    pos = self.check_eat(pos, "$$", 1);
-                    break;
-                }
-                text.push(self.raw_text[pos]);
-                pos = self.eat(pos);
-            }
-            return Some((MathDisplay { formula: text }, pos));
+            let pos = self.check_eat(pos, "$$", 1);
+            let result = self.get_until(pos, "$$", true);
+            return Some((MathDisplay { formula: result.text }, result.pos));
         }
         return None;
     }
-    fn text(&self, pos: usize, linebreak: bool, stop_at: &str, bold: bool, italic: bool, del: bool) -> Option<(Text, usize)> {
+    fn text(&self, pos: usize, multi_lines: bool, stop_at: &str, bold: bool, italic: bool, del: bool) -> Option<(Text, usize)> {
         let mut pos = pos;
         let mut text = Text { nodes: vec![] };
         let mut cond = true;
@@ -771,13 +868,30 @@ impl Parser {
                 }
                 None => {}
             }
+            match self.image(pos) {
+                Some((i, p)) => {
+                    text.nodes.push(Box::new(i));
+                    pos = p;
+                    cond = true;
+                    continue;
+                }
+                None => {}
+            }
+            match self.url(pos) {
+                Some((u, p)) => {
+                    text.nodes.push(Box::new(u));
+                    pos = p;
+                    cond = true;
+                    continue;
+                }
+                None => {}
+            }
             match self.get_char(pos) {
                 Some(c) => {
-                    if !linebreak && c == '\n' as InnerByte {
+                    if !multi_lines && c == '\n' as InnerByte {
                         pos += 1;
                         break;
                     }
-
                     text.nodes.push(Box::new(c));
                     pos += 1;
                     cond = true;
@@ -833,36 +947,120 @@ impl Parser {
 
     fn code_inline(&self, pos: usize) -> Option<(CodeInline, usize)> {
         if self.is(pos, "`") {
-            let mut pos = self.check_eat(pos, "`", 1);
-            let mut text = InnerBuffer::new();
-            while pos < self.raw_text.len() {
-                if self.is(pos, "\n") || self.is(pos, "`") {
-                    pos = self.eat(pos);
-                    break;
-                }
-                text.push(self.raw_text[pos]);
-                pos = self.eat(pos);
-            }
-            if text.len() > 0 {
-                return Some((CodeInline { code: text }, pos));
+            let pos = self.check_eat(pos, "`", 1);
+            let result = self.get_until(pos, "`", false);
+            if result.text.len() > 0 {
+                return Some((CodeInline { code: result.text }, result.pos));
             }
         }
         return None;
     }
     fn math_inline(&self, pos: usize) -> Option<(MathInline, usize)> {
         if self.is(pos, "$") {
-            let mut pos = self.check_eat(pos, "$", 1);
-            let mut text = InnerBuffer::new();
-            while pos < self.raw_text.len() {
-                if self.is(pos, "\n") || self.is(pos, "$") {
-                    pos = self.eat(pos);
-                    break;
-                }
-                text.push(self.raw_text[pos]);
-                pos = self.eat(pos);
+            let pos = self.check_eat(pos, "$", 1);
+            let result = self.get_until(pos, "`", false);
+            if result.text.len() > 0 {
+                return Some((MathInline { formula: result.text }, result.pos));
             }
-            return Some((MathInline { formula: text }, pos));
         }
         return None;
+    }
+    fn image(&self, pos: usize) -> Option<(Image, usize)> {
+        let mut pos = pos;
+
+        if !self.is(pos, "![") {
+            return None;
+        }
+        pos = self.check_eat(pos, "![", 1);
+        let result = self.get_until(pos, "]", false);
+        if !result.reached_target {
+            return None;
+        }
+        let (alt, mut pos) = (result.text, result.pos);
+
+        if !self.is(pos, "(") {
+            return None;
+        }
+        pos = self.check_eat(pos, "(", 1);
+
+        let result2 =
+            self.get_until_pattern(pos,
+                                   |x|
+                                       if self.is(x, " ") || self.is(x, ")") {
+                                           Some(x + 1)
+                                       } else {
+                                           None
+                                       }
+                                   , false);
+        if !result2.reached_target {
+            return None;
+        }
+        let (url, mut pos) = (result2.text, result2.pos - 1);
+
+        let title;
+        if self.is(pos, " ") {
+            pos = self.check_eat(pos, " ", 1);
+            let result = self.get_until(pos, ")", false);
+            if !result.reached_target {
+                return None;
+            }
+            title = result.text;
+            pos = pos;
+        } else {
+            title = vec![];
+        }
+
+        if !self.is(pos, ")") {
+            return None;
+        }
+
+        return Some((Image { alt, url, title }, self.check_eat(pos, ")", 1)));
+    }
+    fn url(&self, pos: usize) -> Option<(Url, usize)> {
+        let mut pos = pos;
+
+        if !self.is(pos, "[") {
+            return None;
+        }
+        pos = self.check_eat(pos, "[", 1);
+        let result = self.get_until(pos, "]", false);
+        if !result.reached_target {
+            return None;
+        }
+        let (text, mut pos) = (result.text, result.pos);
+        if !self.is(pos, "(") {
+            return None;
+        }
+        pos = self.check_eat(pos, "(", 1);
+        let result2 =
+            self.get_until_pattern(pos,
+                                   |x|
+                                       if self.is(x, " ") || self.is(x, ")") {
+                                           Some(x + 1)
+                                       } else {
+                                           None
+                                       }
+                                   , false);
+        if !result2.reached_target {
+            return None;
+        }
+        let (url, mut pos) = (result2.text, result2.pos - 1);
+        let title;
+        if self.is(pos, " ") {
+            pos = self.check_eat(pos, " ", 1);
+            let result = self.get_until(pos, ")", false);
+            if !result.reached_target {
+                return None;
+            }
+            title = result.text;
+            pos = pos;
+        } else {
+            title = vec![];
+        }
+        if !self.is(pos, ")") {
+            return None;
+        }
+
+        return Some((Url { text, url, title }, self.check_eat(pos, ")", 1)));
     }
 }

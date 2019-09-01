@@ -8,10 +8,12 @@ quote: ">"{x} text
 code_block: "```" + language? + raw_text + "```"
 math_display: "$$" raw_text "$$"
 
-text: (bold | italic | deleted | code_inline | math_inline | char) *
+text: (bold | italic | deleted | code_inline | math_inline | img | url | char) *
 
 bold: "**" text "**"
 italic: "*" text "*"
 deleted: "~~" text "~~"
 code_inline: "'" raw_text(no newline) "'"
 math_inline: "$" raw_text(no newline) "$"
+img: ![alt](url title)
+url: [text](url title?)

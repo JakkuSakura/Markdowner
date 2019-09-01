@@ -1,3 +1,0 @@
-#def text
-#grammar add_list(text) char(){0,-1}
-#end_def

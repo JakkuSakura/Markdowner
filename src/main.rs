@@ -15,10 +15,9 @@ fn read_from_file(filename: &str) -> String {
     buf
 }
 fn main() {
+    let input = read_from_stdin();
+    let mut parser = parser::Parser{ raw_text: input.into_bytes() };
+    let vec = parser.parse();
+    println!("Result: {}", String::from_utf8(vec).unwrap());
 
-//    let mut parser = parser::Parser::new(&buf);
-//    parser.build();
-//    let mut output = String::new();
-//    parser.output(&mut output);
-//    print!("{}", output)
 }

@@ -1,41 +1,32 @@
-trait Node {
-    //    fn get_node_type(&self) -> &str;
-    fn write_to_buf(&self, buf: &mut Vec<u8>);
+use std::any::{Any, TypeId};
+use std::cmp::{min, max};
+
+#[cfg(debug_assertions)]
+extern crate termcolor;
+
+use std::io::Write;
+use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
+
+trait Node: Any {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str;
+
+    fn write_to_buf(&self, buf: &mut dyn Buf);
+
+    /// return the possible count of inner bytes within this node
+    fn len(&self) -> i32;
 }
 
-trait VecU8Ex {
-    fn new() -> Vec<u8>;
-    fn from_num(i: i32) -> Vec<u8>;
-    fn push_vec(&mut self, s: &Vec<u8>);
+pub type InnerByte = u8;
+pub type InnerBuffer = Vec<InnerByte>;
+
+pub trait Buf {
+    fn push_vec(&mut self, s: &InnerBuffer);
     fn push_str(&mut self, s: &str);
     fn push_char(&mut self, ch: char);
+    fn push(&mut self, ch: InnerByte);
 }
 
-impl VecU8Ex for Vec<u8> {
-    fn new() -> Vec<u8> {
-        vec![] as Vec<u8>
-    }
-    fn from_num(i: i32) -> Vec<u8> {
-        let mut buf = Vec::<u8>::new();
-        buf.push_str(&format!("{}", i));
-        return buf;
-    }
-    fn push_vec(&mut self, s: &Vec<u8>) {
-        for e in s {
-            self.push(*e);
-        }
-    }
-    fn push_str(&mut self, s: &str) {
-        for e in s.as_bytes() {
-            self.push(*e);
-        }
-    }
-
-    /// warning: this will only save low 8-bit of a char
-    fn push_char(&mut self, ch: char) {
-        self.push(ch as u8)
-    }
-}
 
 struct Passage {
     paragraphs: Vec<Box<dyn Node>>
@@ -48,26 +39,25 @@ struct PlainParagraph {
 
 
 struct Heading {
-    heading_level: i32,
+    rank: i32,
     text: Box<dyn Node>,
 }
 
 struct OrderedList {
-    text: Box<dyn Node>
+    list: Vec<Box<dyn Node>>
 }
 
 struct UnorderedList {
-    text: Box<dyn Node>
+    list: Vec<Box<dyn Node>>
 }
 
 struct Quote {
-    quote_level: i32,
-    text: Box<dyn Node>,
+    list: Vec<Box<dyn Node>>,
 }
 
 struct CodeBlock {
-    language: Vec<u8>,
-    text: Vec<u8>,
+    language: InnerBuffer,
+    text: InnerBuffer,
 }
 
 struct Text {
@@ -79,7 +69,7 @@ struct Bold {
 }
 
 struct MathDisplay {
-    formula: Vec<u8>
+    formula: InnerBuffer
 }
 
 struct Italic {
@@ -91,143 +81,332 @@ struct Deleted {
 }
 
 struct CodeInline {
-    code: Vec<u8>
+    code: InnerBuffer
 }
 
 struct MathInline {
-    formula: Vec<u8>
+    formula: InnerBuffer
 }
 
 
 impl Node for Passage {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
-        for x in &self.paragraphs {
-            x.write_to_buf(buf);
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "Passage"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
+        self.paragraphs.iter().for_each(|x| x.write_to_buf(buf));
+    }
+
+    fn len(&self) -> i32 {
+        let mut x = 0;
+        for y in &self.paragraphs {
+            x += y.len();
         }
+        return x;
     }
 }
 
 impl Node for PlainParagraph {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "PlainParagraph"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
         buf.push_str("<p>");
         self.text.write_to_buf(buf);
         buf.push_str("</p>");
+    }
+
+    fn len(&self) -> i32 {
+        self.text.len()
     }
 }
 
 
 impl Node for Heading {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
-        buf.push_str(&format!("<h{}>", self.heading_level));
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "Heading"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
+        buf.push_str(&format!("<h{}>", self.rank));
         self.text.write_to_buf(buf);
-        buf.push_str(&format!("</h{}>", self.heading_level));
+        buf.push_str(&format!("</h{}>", self.rank));
+    }
+
+    fn len(&self) -> i32 {
+        self.text.len()
     }
 }
 
 
 impl Node for OrderedList {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
-        unimplemented!()
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "OrderedList"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
+        buf.push_str("<ol>");
+        for x in &self.list {
+            buf.push_str("<li>");
+            x.write_to_buf(buf);
+            buf.push_str("</li>");
+        }
+        buf.push_str("</ol>");
+    }
+
+    fn len(&self) -> i32 {
+        let mut x = 0;
+        self.list.iter().for_each(|y| x += y.len());
+        return x;
     }
 }
 
 
 impl Node for UnorderedList {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
-        unimplemented!()
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "UnorderedList"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
+        buf.push_str("<ul>");
+        for x in &self.list {
+            buf.push_str("<li>");
+            x.write_to_buf(buf);
+            buf.push_str("</li>");
+        }
+        buf.push_str("</ul>");
+    }
+
+    fn len(&self) -> i32 {
+        let mut x = 0;
+        self.list.iter().for_each(|y| x += y.len());
+        return x;
     }
 }
 
 
 impl Node for Quote {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
-        unimplemented!()
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "Quote"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
+        buf.push_str("<blockquote>");
+        for x in &self.list {
+            buf.push_str("<p>");
+            x.write_to_buf(buf);
+            buf.push_str("<p>");
+        }
+        buf.push_str("</blockquote>");
+    }
+
+    fn len(&self) -> i32 {
+        let mut x = 0;
+        self.list.iter().for_each(|y| x += y.len());
+        return x;
     }
 }
 
 
 impl Node for CodeBlock {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "CodeBlock"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
         buf.push_str("<pre class=\"lang");
         if self.language.len() > 0 {
             buf.push_str("-");
             buf.push_vec(&self.language);
             buf.push_str("\"");
         }
+        buf.push_str(">");
         buf.push_vec(&self.text);
         buf.push_str("</pre>");
+    }
+
+    fn len(&self) -> i32 {
+        (self.language.len() + self.text.len()) as i32
     }
 }
 
 
 impl Node for MathDisplay {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "MathDisplay"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
         buf.push_str("<pre class=\"lang-math-display\">");
         buf.push_vec(&self.formula);
         buf.push_str("</pre>");
     }
+
+    fn len(&self) -> i32 {
+        self.formula.len() as i32
+    }
 }
 
 impl Node for Text {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "Text"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
         for x in &self.nodes {
             x.write_to_buf(buf);
         }
     }
+
+    fn len(&self) -> i32 {
+        let mut y = 0;
+        self.nodes.iter().for_each(|x| y += x.len());
+        return y;
+    }
 }
 
 impl Node for Bold {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "Bold"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
         buf.push_str("<b>");
         self.text.write_to_buf(buf);
         buf.push_str("</b>");
+    }
+
+    fn len(&self) -> i32 {
+        self.text.len()
     }
 }
 
 
 impl Node for Italic {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "Italic"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
         buf.push_str("<i>");
         self.text.write_to_buf(buf);
         buf.push_str("</i>");
+    }
+
+    fn len(&self) -> i32 {
+        self.text.len()
     }
 }
 
 
 impl Node for Deleted {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "Deleted"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
         buf.push_str("<del>");
         self.text.write_to_buf(buf);
         buf.push_str("</del>");
+    }
+
+    fn len(&self) -> i32 {
+        self.text.len()
     }
 }
 
 
 impl Node for CodeInline {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "CodeInline"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
         buf.push_str("<code>");
         buf.push_vec(&self.code);
         buf.push_str("</code>");
+    }
+
+    fn len(&self) -> i32 {
+        self.code.len() as i32
     }
 }
 
 
 impl Node for MathInline {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "MathInline"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
         buf.push_str("<div class=\"lang-math-inline\">");
         buf.push_vec(&self.formula);
         buf.push_str("</div>");
     }
+
+    fn len(&self) -> i32 {
+        self.formula.len() as i32
+    }
 }
 
-impl Node for u8 {
-    fn write_to_buf(&self, buf: &mut Vec<u8>) {
+impl Node for InnerByte {
+    #[cfg(debug_assertions)]
+    fn get_node_type(&self) -> &str {
+        "InnerByte"
+    }
+
+    fn write_to_buf(&self, buf: &mut dyn Buf) {
         buf.push(*self);
+    }
+
+    fn len(&self) -> i32 {
+        1
     }
 }
 
 pub struct Parser {
-    pub raw_text: Vec<u8>,
+    pub raw_text: InnerBuffer,
+}
+
+fn encase<T: Node + 'static>(x: Option<(T, usize)>) -> Option<(Box<dyn Node>, usize)> {
+    x.map(|(y, z)| (Box::new(y) as _, z))
+}
+
+
+#[cfg(debug_assertions)]
+fn show_slice(text: &InnerBuffer, begin: usize, end: usize, highlight_begin: usize, hightlight_end: usize) {
+    let begin = max(begin, 0);
+    let end = min(end, text.len());
+
+
+    println!("[{}..{})", begin, end);
+    for i in begin..end {
+        if i >= highlight_begin && i < hightlight_end {
+            let mut stdout = StandardStream::stdout(ColorChoice::Always);
+            stdout.set_color(ColorSpec::new().set_fg(Some(Color::Green))).unwrap();
+            write!(&mut stdout, "{}", text[i] as char).unwrap();
+            stdout.reset();
+        } else {
+            print!("{}", text[i] as char);
+        }
+    }
+    println!();
 }
 
 /// every function that returns Option<(Node, usize)>
@@ -246,26 +425,26 @@ impl Parser {
         }
         return true;
     }
-    fn get_number(&self, pos: usize) -> Option<(i32, usize)> {
-        if !self.raw_text[pos].is_ascii_digit() {
-            return None;
-        }
-        let mut num = 0i32;
-        let mut pos = pos;
-        while pos < self.raw_text.len() {
-            if !self.raw_text[pos].is_ascii_digit() {
-                break;
-            }
-            num = num * 10 + self.raw_text[pos] as i32 - 48;
-            pos += 1;
-        }
-        return Some((num, pos));
-    }
-    fn get_word(&self, pos: usize) -> Option<(Vec<u8>, usize)> {
+    //    fn get_number(&self, pos: usize) -> Option<(i32, usize)> {
+//        if !self.raw_text[pos].is_ascii_digit() {
+//            return None;
+//        }
+//        let mut num = 0i32;
+//        let mut pos = pos;
+//        while pos < self.raw_text.len() {
+//            if !self.raw_text[pos].is_ascii_digit() {
+//                break;
+//            }
+//            num = num * 10 + self.raw_text[pos] as i32 - 48;
+//            pos += 1;
+//        }
+//        return Some((num, pos));
+//    }
+    fn get_word(&self, pos: usize) -> Option<(InnerBuffer, usize)> {
         if !self.raw_text[pos].is_ascii_alphanumeric() {
             return None;
         }
-        let mut num: Vec<u8> = vec![];
+        let mut num: InnerBuffer = vec![];
         let mut pos = pos;
         while pos < self.raw_text.len() {
             if !self.raw_text[pos].is_ascii_alphanumeric() {
@@ -276,18 +455,23 @@ impl Parser {
         }
         return Some((num, pos));
     }
-    fn get_char(&self, pos: usize) -> Option<(u8, usize)> {
+    fn get_char(&self, pos: usize) -> Option<InnerByte> {
         if pos >= self.raw_text.len() {
             return None;
         }
-        return Some((self.raw_text[pos], pos + 1));
+        return Some(self.raw_text[pos]);
     }
-    fn eat(&self, pos: usize, s: &str, count: i32) -> usize {
-        if s != "" && self.count(pos, s) < count {
-            panic!("Cannot eat {} for {} time(s)", s, count);
+    fn check_eat(&self, pos: usize, s: &str, count: i32) -> usize {
+        if s != "" {
+            if self.count(pos, s) < count {
+                panic!("Cannot eat {} for {} time(s)", s, count);
+            }
+            return pos + s.len() * count as usize;
+        } else {
+            return pos + count as usize;
         }
-        return pos + s.len() * count as usize;
     }
+    fn eat(&self, pos: usize) -> usize { pos + 1 }
     fn count(&self, pos: usize, s: &str) -> i32 {
         let mut cnt = 0;
         let mut p = pos;
@@ -299,14 +483,23 @@ impl Parser {
         }
         return cnt;
     }
-    pub fn parse(&self) -> Vec<u8> {
+    pub fn parse(&self, buf: &mut dyn Buf) {
         match self.passage(0) {
-            Some((p, pos)) => {
-                let mut buf = Vec::<u8>::new();
-                p.write_to_buf(&mut buf);
-                return buf;
+            Some((mut p, _)) => {
+                Parser::readjust(&mut p);
+                p.write_to_buf(buf);
             }
-            None => panic!("WTF")
+            None => panic!("unexpected error: unknown reason")
+        }
+    }
+
+    fn readjust(node: &mut dyn Node) {
+        fn is<T0: ?Sized + Any, T: ?Sized + Any>(_s: &T) -> bool {
+            TypeId::of::<T0>() == TypeId::of::<T>()
+        }
+
+        if is::<OrderedList, _>(node) {
+            println!("Node is ordered list");
         }
     }
     fn passage(&self, pos: usize) -> Option<(Passage, usize)> {
@@ -315,168 +508,257 @@ impl Parser {
         while pos < self.raw_text.len() {
             match self.paragraph(pos) {
                 Some((x, p)) => {
+//                    println!("Matched {} before {}", x.get_node_type(), p);
                     psg.paragraphs.push(x);
+                    if pos == p {
+                        panic!("Unexpected error: same location: {}", p);
+                    }
                     pos = p;
                 }
-                None => panic!("WTF2")
+                None => panic!("Unexpected error: unknown reason")
             }
         }
         return Some((psg, pos));
     }
-    fn boxing<T: Node + 'static>(x: Option<(T, usize)>) -> Option<(Box<dyn Node>, usize)> {
-        x.map(|(y, z)| (Box::new(y) as _, z))
-    }
 
     fn paragraph(&self, pos: usize) -> Option<(Box<dyn Node>, usize)> {
         let heading = self.heading(pos);
-        if heading.is_some() { return Parser::boxing(heading); }
+        if heading.is_some() { return encase(heading); }
         let ordered_list = self.ordered_list(pos);
-        if ordered_list.is_some() { return Parser::boxing(ordered_list); }
+        if ordered_list.is_some() { return encase(ordered_list); }
 
         let unordered_list = self.unordered_list(pos);
-        if unordered_list.is_some() { return Parser::boxing(unordered_list); }
+        if unordered_list.is_some() { return encase(unordered_list); }
 
         let quote = self.quote(pos);
-        if quote.is_some() { return Parser::boxing(quote); }
+        if quote.is_some() { return encase(quote); }
 
         let code_block = self.code_block(pos);
-        if code_block.is_some() { return Parser::boxing(code_block); }
+        if code_block.is_some() { return encase(code_block); }
 
         let math_display = self.math_display(pos);
-        if math_display.is_some() { return Parser::boxing(math_display); }
+        if math_display.is_some() { return encase(math_display); }
 
-
-        let plain = self.plain(pos);
-        if plain.is_some() { return Parser::boxing(plain); }
+        let plain_paragraph = self.plain_paragraph(pos);
+        if plain_paragraph.is_some() { return encase(plain_paragraph); }
 
         return None;
     }
-    fn plain(&self, pos: usize) -> Option<(PlainParagraph, usize)> {
-        match self.text(pos, false, "") {
+    fn plain_paragraph(&self, pos: usize) -> Option<(PlainParagraph, usize)> {
+        match self.text(pos, false, "", true, true, true) {
             Some((x, y)) => {
-                Some((PlainParagraph { text: Box::new((x)) }, y))
+//                if x.len() > 0 {
+                Some((PlainParagraph { text: Box::new(x) }, y))
+//                } else {
+//                    None
+//                }
             }
             None => None
         }
     }
     fn heading(&self, pos: usize) -> Option<(Heading, usize)> {
-        let number = self.count(pos, "#");
-        if number < 1 { return None; }
-        let pos = self.eat(pos, "#", number);
-        let (text, new_pos) = self.text(pos, false, "").unwrap();
-
-        return Some((Heading { heading_level: number, text: Box::new(text) }, new_pos));
+        let rank = self.count(pos, "#");
+        if rank < 1 { return None; }
+        let pos = self.check_eat(pos, "#", rank);
+        let (text, new_pos) = self.text(pos, false, "", true, true, true).unwrap();
+        if rank > 6 {
+            return None;
+        }
+        return Some((Heading { rank, text: Box::new(text) }, new_pos));
     }
     fn ordered_list(&self, pos: usize) -> Option<(OrderedList, usize)> {
-        match self.get_number(pos) {
-            Some((x, pos1)) => {
-                if !self.is(pos1, ". ") {
-                    return None;
-                }
-                let pos2 = self.eat(pos1, ". ", 1);
-                let (text, pos3) = self.text(pos2, false, "").unwrap();
-                return Some((OrderedList { text: Box::new(text) }, pos3));
+        let mut pos = pos;
+        fn is_item_number(self_: &Parser, pos: usize) -> Option<usize> {
+            let mut pos = pos;
+            while self_.get_char(pos).unwrap_or(0).is_ascii_digit() {
+                pos = self_.eat(pos);
             }
-            None => None
+            if self_.is(pos, ". ") {
+                return Some(self_.check_eat(pos, ". ", 1));
+            }
+            return None;
+        }
+        let mut list = OrderedList { list: vec![] };
+        loop {
+            match is_item_number(self, pos) {
+                Some(p) => pos = p,
+                None => break
+            }
+            match self.text(pos, false, "", true, true, true) {
+                Some((x, p)) => {
+                    list.list.push(Box::new(x));
+                    pos = p;
+                }
+                None => break
+            }
+        }
+        if list.len() > 0 {
+            return Some((list, pos));
+        } else {
+            return None;
         }
     }
     fn unordered_list(&self, pos: usize) -> Option<(UnorderedList, usize)> {
-        match self.is(pos, "- ") {
-            true => {
-                let pos2 = self.eat(pos, "- ", 1);
-                let (text, pos3) = self.text(pos2, false, "").unwrap();
-                return Some((UnorderedList { text: Box::new(text) }, pos3));
+        let mut pos = pos;
+        fn is_item_prefix(self_: &Parser, pos: usize) -> Option<usize> {
+            let mut pos = pos;
+            let ch = self_.get_char(pos).unwrap_or(0);
+            pos = self_.eat(pos);
+            for c in "-=*".as_bytes() {
+                if ch == *c as InnerByte {
+                    if self_.is(pos, " ") {
+                        return Some(self_.eat(pos));
+                    }
+                }
             }
-            false => None
+            return None;
+        }
+        let mut list = UnorderedList { list: vec![] };
+        loop {
+            match is_item_prefix(self, pos) {
+                Some(p) => pos = p,
+                None => break
+            }
+            match self.text(pos, false, "", true, true, true) {
+                Some((x, p)) => {
+                    list.list.push(Box::new(x));
+                    pos = p;
+                }
+                None => break
+            }
+        }
+        if list.len() > 0 {
+            return Some((list, pos));
+        } else {
+            return None;
         }
     }
+    /// todo: does not support complex structural quotes yet
     fn quote(&self, pos: usize) -> Option<(Quote, usize)> {
-        let number = self.count(pos, ">");
-        if number < 1 { return None; }
-        let pos = self.eat(pos, ">", number);
-        let (text, new_pos) = self.text(pos, false, "").unwrap();
-
-        return Some((Quote { quote_level: number, text: Box::new(text) }, new_pos));
+        let mut pos = pos;
+        fn is_quote_prefix(self_: &Parser, pos: usize) -> Option<usize> {
+            let mut pos = pos;
+            let ch = self_.get_char(pos).unwrap_or(0);
+            pos = self_.eat(pos);
+            if ch == '>' as InnerByte {
+                return Some(self_.eat(pos));
+            }
+            return None;
+        }
+        let mut quote = Quote { list: vec![] };
+        loop {
+            match is_quote_prefix(self, pos) {
+                Some(p) => pos = p,
+                None => break
+            }
+            match self.text(pos, false, "", true, true, true) {
+                Some((x, p)) => {
+                    quote.list.push(Box::new(x));
+                    pos = p;
+                }
+                None => break
+            }
+        }
+        if quote.len() > 0 {
+            return Some((quote, pos));
+        } else {
+            return None;
+        }
     }
     fn code_block(&self, pos: usize) -> Option<(CodeBlock, usize)> {
+        let mut pos = pos;
+        while self.get_char(pos).unwrap_or(48).is_ascii_whitespace() {
+            pos += 1;
+        }
         if self.is(pos, "```") {
-            let mut pos2 = pos + 3;
+            let mut pos = self.check_eat(pos, "```", 1);
             let lang;
-            match self.get_word(pos2) {
-                Some((s, pos3)) => {
+            match self.get_word(pos) {
+                Some((s, p)) => {
                     lang = s;
-                    pos2 = pos3;
+                    pos = p;
                 }
                 None => lang = vec![]
             }
-            let mut text = Vec::<u8>::new();
-            while pos2 < self.raw_text.len() {
-                if self.is(pos2, "```") {
-                    pos2 += 3;
+            let mut text = InnerBuffer::new();
+            while pos < self.raw_text.len() {
+                if self.is(pos, "```") {
+                    pos = self.check_eat(pos, "```", 1);
                     break;
                 }
-                text.push(self.raw_text[pos2]);
-                pos2 += 1;
+                text.push(self.raw_text[pos]);
+                pos = self.eat(pos);
             }
-            return Some((CodeBlock { language: lang, text }, pos2));
+            return Some((CodeBlock { language: lang, text }, pos));
         }
         return None;
     }
     fn math_display(&self, pos: usize) -> Option<(MathDisplay, usize)> {
         if self.is(pos, "$$") {
-            let mut pos2 = pos + 2;
-            let mut text = Vec::<u8>::new();
-            while pos2 < self.raw_text.len() {
-                if self.is(pos2, "$$") {
-                    pos2 += 2;
+            let mut pos = self.check_eat(pos, "$$", 1);
+            let mut text = InnerBuffer::new();
+            while pos < self.raw_text.len() {
+                if self.is(pos, "$$") {
+                    pos = self.check_eat(pos, "$$", 1);
                     break;
                 }
-                text.push(self.raw_text[pos2]);
-                pos2 += 1;
+                text.push(self.raw_text[pos]);
+                pos = self.eat(pos);
             }
-            return Some((MathDisplay { formula: text }, pos2));
+            return Some((MathDisplay { formula: text }, pos));
         }
         return None;
     }
-    fn text(&self, pos: usize, linebreak: bool, stop_at: &str) -> Option<(Text, usize)> {
+    fn text(&self, pos: usize, linebreak: bool, stop_at: &str, bold: bool, italic: bool, del: bool) -> Option<(Text, usize)> {
         let mut pos = pos;
         let mut text = Text { nodes: vec![] };
         let mut cond = true;
         while cond {
             cond = false;
+//            show_slice(&self.raw_text, pos, self.raw_text.len(), pos, pos + 5);
             if self.is(pos, stop_at) {
                 pos += stop_at.len();
                 break;
             }
-            match self.bold(pos) {
-                Some((b, p)) => {
-                    text.nodes.push(Box::new(b));
-                    pos = p;
-                    cond = true;
+            if bold {
+                match self.bold(pos, italic, del) {
+                    Some((b, p)) => {
+                        text.nodes.push(Box::new(b));
+                        pos = p;
+                        cond = true;
+                        continue;
+                    }
+                    None => {}
                 }
-                None => {}
             }
-            match self.italic(pos) {
-                Some((i, p)) => {
-                    text.nodes.push(Box::new(i));
-                    pos = p;
-                    cond = true;
+            if italic {
+                match self.italic(pos, bold, del) {
+                    Some((i, p)) => {
+                        text.nodes.push(Box::new(i));
+                        pos = p;
+                        cond = true;
+                        continue;
+                    }
+                    None => {}
                 }
-                None => {}
             }
-            match self.deleted(pos) {
-                Some((d, p)) => {
-                    text.nodes.push(Box::new(d));
-                    pos = p;
-                    cond = true;
+            if del {
+                match self.deleted(pos, bold, italic) {
+                    Some((d, p)) => {
+                        text.nodes.push(Box::new(d));
+                        pos = p;
+                        cond = true;
+                        continue;
+                    }
+                    None => {}
                 }
-                None => {}
             }
             match self.code_inline(pos) {
                 Some((c, p)) => {
                     text.nodes.push(Box::new(c));
                     pos = p;
                     cond = true;
+                    continue;
                 }
                 None => {}
             }
@@ -485,15 +767,19 @@ impl Parser {
                     text.nodes.push(Box::new(m));
                     pos = p;
                     cond = true;
+                    continue;
                 }
                 None => {}
             }
             match self.get_char(pos) {
-                Some((c, p)) => {
-                    if !linebreak && c == '\n' as u8 { break; }
+                Some(c) => {
+                    if !linebreak && c == '\n' as InnerByte {
+                        pos += 1;
+                        break;
+                    }
 
                     text.nodes.push(Box::new(c));
-                    pos = p;
+                    pos += 1;
                     cond = true;
                 }
                 None => {}
@@ -502,65 +788,80 @@ impl Parser {
 
         return Some((text, pos));
     }
-    fn bold(&self, pos: usize) -> Option<(Bold, usize)> {
+    fn bold(&self, pos: usize, italic: bool, del: bool) -> Option<(Bold, usize)> {
         if self.is(pos, "**") {
-            let pos = pos + 2;
-            match self.text(pos, false, "**") {
-                Some((x, y)) => Some((Bold { text: Box::new(x) }, y)),
-                None => None
-            };
+            let pos = self.check_eat(pos, "**", 1);
+            match self.text(pos, false, "**", false, italic, del) {
+                Some((x, y)) => {
+                    if x.len() > 0 {
+                        return Some((Bold { text: Box::new(x) }, y));
+                    }
+                }
+                None => {}
+            }
         }
-        None
+        return None;
     }
-    fn italic(&self, pos: usize) -> Option<(Italic, usize)> {
+    fn italic(&self, pos: usize, bold: bool, del: bool) -> Option<(Italic, usize)> {
         if self.is(pos, "*") {
-            let pos = pos + 1;
-            match self.text(pos, false, "*") {
-                Some((x, y)) => Some((Italic { text: Box::new(x) }, y)),
-                None => None
-            };
+            let pos = self.check_eat(pos, "*", 1);
+            match self.text(pos, false, "*", bold, false, del) {
+                Some((x, y)) => {
+                    if x.len() > 0 {
+                        return Some((Italic { text: Box::new(x) }, y));
+                    }
+                }
+                None => {}
+            }
         }
-        None
+        return None;
     }
-    fn deleted(&self, pos: usize) -> Option<(Deleted, usize)> {
+    fn deleted(&self, pos: usize, bold: bool, italic: bool) -> Option<(Deleted, usize)> {
         if self.is(pos, "~~") {
-            let pos = pos + 2;
-            match self.text(pos, false, "~~") {
-                Some((x, y)) => Some((Deleted { text: Box::new(x) }, y)),
-                None => None
-            };
+            let pos = self.check_eat(pos, "~~", 1);
+            match self.text(pos, false, "~~", bold, italic, false) {
+                Some((x, y)) => {
+                    if x.len() > 0 {
+                        return Some((Deleted { text: Box::new(x) }, y));
+                    }
+                }
+                None => {}
+            }
         }
-        None
+        return None;
     }
+
     fn code_inline(&self, pos: usize) -> Option<(CodeInline, usize)> {
         if self.is(pos, "`") {
-            let mut pos2 = pos + 1;
-            let mut text = Vec::<u8>::new();
-            while pos2 < self.raw_text.len() {
-                if self.is(pos2, "\n") || self.is(pos2, "`") {
-                    pos2 += 1;
+            let mut pos = self.check_eat(pos, "`", 1);
+            let mut text = InnerBuffer::new();
+            while pos < self.raw_text.len() {
+                if self.is(pos, "\n") || self.is(pos, "`") {
+                    pos = self.eat(pos);
                     break;
                 }
-                text.push(self.raw_text[pos2]);
-                pos2 += 1;
+                text.push(self.raw_text[pos]);
+                pos = self.eat(pos);
             }
-            return Some((CodeInline { code: text }, pos2));
+            if text.len() > 0 {
+                return Some((CodeInline { code: text }, pos));
+            }
         }
         return None;
     }
     fn math_inline(&self, pos: usize) -> Option<(MathInline, usize)> {
         if self.is(pos, "$") {
-            let mut pos2 = pos + 1;
-            let mut text = Vec::<u8>::new();
-            while pos2 < self.raw_text.len() {
-                if self.is(pos2, "\n") || self.is(pos2, "$") {
-                    pos2 += 1;
+            let mut pos = self.check_eat(pos, "$", 1);
+            let mut text = InnerBuffer::new();
+            while pos < self.raw_text.len() {
+                if self.is(pos, "\n") || self.is(pos, "$") {
+                    pos = self.eat(pos);
                     break;
                 }
-                text.push(self.raw_text[pos2]);
-                pos2 += 1;
+                text.push(self.raw_text[pos]);
+                pos = self.eat(pos);
             }
-            return Some((MathInline { formula: text }, pos2));
+            return Some((MathInline { formula: text }, pos));
         }
         return None;
     }

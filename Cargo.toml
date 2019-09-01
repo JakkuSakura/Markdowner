@@ -3,3 +3,5 @@ name = "markdowner"
 version = "0.1.0"
 authors = ["qiujiangkun <qiujiangkun@foxmail.com>"]
 edition = "2018"
+[dependencies]
+termcolor = "1"

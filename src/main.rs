@@ -1,23 +1,46 @@
-use std::io::{Read, stdin};
+use std::io::{Read, Write};
 use std::fs::File;
 
 mod parser;
-fn read_from_stdin() -> String {
-    let stdin = std::io::stdin();
-    let mut buf = String::new();
-    stdin.lock().read_to_string(&mut buf).unwrap();
-    buf
-}
+use crate::parser::Buf;
+use crate::parser::InnerBuffer;
+use crate::parser::InnerByte;
+
 fn read_from_file(filename: &str) -> String {
     let mut file = File::open(filename).unwrap();
     let mut buf = String::new();
     file.read_to_string(&mut buf).unwrap();
-    buf
+    return buf
 }
+
+impl Buf for Vec<u8> {
+    fn push_vec(&mut self, s: &InnerBuffer) {
+        for e in s {
+            self.push(*e);
+        }
+    }
+    fn push_str(&mut self, s: &str) {
+        for e in s.as_bytes() {
+            self.push(*e);
+        }
+    }
+
+    fn push_char(&mut self, ch: char) {
+        self.push(ch as InnerByte)
+    }
+
+    fn push(&mut self, ch: u8) {
+        self.push(ch);
+    }
+}
+
 fn main() {
-    let input = read_from_stdin();
-    let mut parser = parser::Parser{ raw_text: input.into_bytes() };
-    let vec = parser.parse();
-    println!("Result: {}", String::from_utf8(vec).unwrap());
+    let input = read_from_file("temp/input.txt");
+//    println!("Input: {}", input);
+    let parser = parser::Parser { raw_text: input.into_bytes() };
+    let mut buf: Vec<u8> = vec![];
+    parser.parse(&mut buf);
+    let mut output = File::create("/dev/stdout").unwrap();
+    output.write(buf.as_slice()).unwrap();
 
 }

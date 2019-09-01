@@ -1,5 +1,5 @@
 passage: paragraph *
-paragraph: plain | hx | il | ol | quote | code_block | math_display
+paragraph: plain | hx | io | ul | quote | code_block | math_display
 plain: text $
 hx: "#"{x} text $
 ol: num "." text $

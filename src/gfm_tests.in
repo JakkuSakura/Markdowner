@@ -1,0 +1,3365 @@
+
+    #[test]
+    fn gfm_test_001() {
+        test("\tfoo\tbaz\t\tbim\n", "<pre><code>foo\tbaz\t\tbim</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_002() {
+        test("  \tfoo\tbaz\t\tbim\n", "<pre><code>foo\tbaz\t\tbim</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_003() {
+        test("    a\ta\n    ὐ\ta\n", "<pre><code>a\ta\nὐ\ta</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_004() {
+        test("  - foo\n\n\tbar\n", "<ul><li><p>foo</p><p>bar</p></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_005() {
+        test("- foo\n\n\t\tbar\n", "<ul><li><p>foo</p><pre><code>  bar</code></pre></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_006() {
+        test(">\t\tfoo\n", "<blockquote><pre><code>  foo</code></pre></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_007() {
+        test("-\t\tfoo\n", "<ul><li><pre><code>  foo</code></pre></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_008() {
+        test("    foo\n\tbar\n", "<pre><code>foo\nbar</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_009() {
+        test(" - foo\n   - bar\n\t - baz\n", "<ul><li>foo<ul><li>bar<ul><li>baz</li></ul></li></ul></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_010() {
+        test("#\tFoo\n", "<h1>Foo</h1>");
+    }
+
+    #[test]
+    fn gfm_test_011() {
+        test("*\t*\t*\t\n", "<hr />");
+    }
+
+    #[test]
+    fn gfm_test_012() {
+        test("- `one\n- two`\n", "<ul><li>`one</li><li>two`</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_013() {
+        test("***\n---\n___\n", "<hr /><hr /><hr />");
+    }
+
+    #[test]
+    fn gfm_test_014() {
+        test("+++\n", "<p>+++</p>");
+    }
+
+    #[test]
+    fn gfm_test_015() {
+        test("===\n", "<p>===</p>");
+    }
+
+    #[test]
+    fn gfm_test_016() {
+        test("--\n**\n__\n", "<p>--\n**\n__</p>");
+    }
+
+    #[test]
+    fn gfm_test_017() {
+        test(" ***\n  ***\n   ***\n", "<hr /><hr /><hr />");
+    }
+
+    #[test]
+    fn gfm_test_018() {
+        test("    ***\n", "<pre><code>***</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_019() {
+        test("Foo\n    ***\n", "<p>Foo\n***</p>");
+    }
+
+    #[test]
+    fn gfm_test_020() {
+        test("_____________________________________\n", "<hr />");
+    }
+
+    #[test]
+    fn gfm_test_021() {
+        test(" - - -\n", "<hr />");
+    }
+
+    #[test]
+    fn gfm_test_022() {
+        test(" **  * ** * ** * **\n", "<hr />");
+    }
+
+    #[test]
+    fn gfm_test_023() {
+        test("-     -      -      -\n", "<hr />");
+    }
+
+    #[test]
+    fn gfm_test_024() {
+        test("- - - -    \n", "<hr />");
+    }
+
+    #[test]
+    fn gfm_test_025() {
+        test("_ _ _ _ a\n\na------\n\n---a---\n", "<p>_ _ _ _ a</p><p>a------</p><p>---a---</p>");
+    }
+
+    #[test]
+    fn gfm_test_026() {
+        test(" *-*\n", "<p><em>-</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_027() {
+        test("- foo\n***\n- bar\n", "<ul><li>foo</li></ul><hr /><ul><li>bar</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_028() {
+        test("Foo\n***\nbar\n", "<p>Foo</p><hr /><p>bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_029() {
+        test("Foo\n---\nbar\n", "<h2>Foo</h2><p>bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_030() {
+        test("* Foo\n* * *\n* Bar\n", "<ul><li>Foo</li></ul><hr /><ul><li>Bar</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_031() {
+        test("- Foo\n- * * *\n", "<ul><li>Foo</li><li><hr /></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_032() {
+        test("# foo\n## foo\n### foo\n#### foo\n##### foo\n###### foo\n", "<h1>foo</h1><h2>foo</h2><h3>foo</h3><h4>foo</h4><h5>foo</h5><h6>foo</h6>");
+    }
+
+    #[test]
+    fn gfm_test_033() {
+        test("####### foo\n", "<p>####### foo</p>");
+    }
+
+    #[test]
+    fn gfm_test_034() {
+        test("#5 bolt\n\n#hashtag\n", "<p>#5 bolt</p><p>#hashtag</p>");
+    }
+
+    #[test]
+    fn gfm_test_035() {
+        test("\\## foo\n", "<p>## foo</p>");
+    }
+
+    #[test]
+    fn gfm_test_036() {
+        test("# foo *bar* \\*baz\\*\n", "<h1>foo <em>bar</em> *baz*</h1>");
+    }
+
+    #[test]
+    fn gfm_test_037() {
+        test("#                  foo                     \n", "<h1>foo</h1>");
+    }
+
+    #[test]
+    fn gfm_test_038() {
+        test(" ### foo\n  ## foo\n   # foo\n", "<h3>foo</h3><h2>foo</h2><h1>foo</h1>");
+    }
+
+    #[test]
+    fn gfm_test_039() {
+        test("    # foo\n", "<pre><code># foo</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_040() {
+        test("foo\n    # bar\n", "<p>foo\n# bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_041() {
+        test("## foo ##\n  ###   bar    ###\n", "<h2>foo</h2><h3>bar</h3>");
+    }
+
+    #[test]
+    fn gfm_test_042() {
+        test("# foo ##################################\n##### foo ##\n", "<h1>foo</h1><h5>foo</h5>");
+    }
+
+    #[test]
+    fn gfm_test_043() {
+        test("### foo ###     \n", "<h3>foo</h3>");
+    }
+
+    #[test]
+    fn gfm_test_044() {
+        test("### foo ### b\n", "<h3>foo ### b</h3>");
+    }
+
+    #[test]
+    fn gfm_test_045() {
+        test("# foo#\n", "<h1>foo#</h1>");
+    }
+
+    #[test]
+    fn gfm_test_046() {
+        test("### foo \\###\n## foo #\\##\n# foo \\#\n", "<h3>foo ###</h3><h2>foo ###</h2><h1>foo #</h1>");
+    }
+
+    #[test]
+    fn gfm_test_047() {
+        test("****\n## foo\n****\n", "<hr /><h2>foo</h2><hr />");
+    }
+
+    #[test]
+    fn gfm_test_048() {
+        test("Foo bar\n# baz\nBar foo\n", "<p>Foo bar</p><h1>baz</h1><p>Bar foo</p>");
+    }
+
+    #[test]
+    fn gfm_test_049() {
+        test("## \n#\n### ###\n", "<h2></h2><h1></h1><h3></h3>");
+    }
+
+    #[test]
+    fn gfm_test_050() {
+        test("Foo *bar*\n=========\n\nFoo *bar*\n---------\n", "<h1>Foo <em>bar</em></h1><h2>Foo <em>bar</em></h2>");
+    }
+
+    #[test]
+    fn gfm_test_051() {
+        test("Foo *bar\nbaz*\n====\n", "<h1>Foo <em>bar\nbaz</em></h1>");
+    }
+
+    #[test]
+    fn gfm_test_052() {
+        test("  Foo *bar\nbaz*\t\n====\n", "<h1>Foo <em>bar\nbaz</em></h1>");
+    }
+
+    #[test]
+    fn gfm_test_053() {
+        test("Foo\n-------------------------\n\nFoo\n=\n", "<h2>Foo</h2><h1>Foo</h1>");
+    }
+
+    #[test]
+    fn gfm_test_054() {
+        test("   Foo\n---\n\n  Foo\n-----\n\n  Foo\n  ===\n", "<h2>Foo</h2><h2>Foo</h2><h1>Foo</h1>");
+    }
+
+    #[test]
+    fn gfm_test_055() {
+        test("    Foo\n    ---\n\n    Foo\n---\n", "<pre><code>Foo\n---\n\nFoo</code></pre><hr />");
+    }
+
+    #[test]
+    fn gfm_test_056() {
+        test("Foo\n   ----      \n", "<h2>Foo</h2>");
+    }
+
+    #[test]
+    fn gfm_test_057() {
+        test("Foo\n    ---\n", "<p>Foo\n---</p>");
+    }
+
+    #[test]
+    fn gfm_test_058() {
+        test("Foo\n= =\n\nFoo\n--- -\n", "<p>Foo\n= =</p><p>Foo</p><hr />");
+    }
+
+    #[test]
+    fn gfm_test_059() {
+        test("Foo  \n-----\n", "<h2>Foo</h2>");
+    }
+
+    #[test]
+    fn gfm_test_060() {
+        test("Foo\\\n----\n", "<h2>Foo\\</h2>");
+    }
+
+    #[test]
+    fn gfm_test_061() {
+        test("`Foo\n----\n`\n\n<a title=\"a lot\n---\nof dashes\"/>\n", "<h2>`Foo</h2><p>`</p><h2>&lt;a title=&quot;a lot</h2><p>of dashes&quot;/&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_062() {
+        test("> Foo\n---\n", "<blockquote><p>Foo</p></blockquote><hr />");
+    }
+
+    #[test]
+    fn gfm_test_063() {
+        test("> foo\nbar\n===\n", "<blockquote><p>foo\nbar\n===</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_064() {
+        test("- Foo\n---\n", "<ul><li>Foo</li></ul><hr />");
+    }
+
+    #[test]
+    fn gfm_test_065() {
+        test("Foo\nBar\n---\n", "<h2>Foo\nBar</h2>");
+    }
+
+    #[test]
+    fn gfm_test_066() {
+        test("---\nFoo\n---\nBar\n---\nBaz\n", "<hr /><h2>Foo</h2><h2>Bar</h2><p>Baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_067() {
+        test("\n====\n", "<p>====</p>");
+    }
+
+    #[test]
+    fn gfm_test_068() {
+        test("---\n---\n", "<hr /><hr />");
+    }
+
+    #[test]
+    fn gfm_test_069() {
+        test("- foo\n-----\n", "<ul><li>foo</li></ul><hr />");
+    }
+
+    #[test]
+    fn gfm_test_070() {
+        test("    foo\n---\n", "<pre><code>foo</code></pre><hr />");
+    }
+
+    #[test]
+    fn gfm_test_071() {
+        test("> foo\n-----\n", "<blockquote><p>foo</p></blockquote><hr />");
+    }
+
+    #[test]
+    fn gfm_test_072() {
+        test("\\> foo\n------\n", "<h2>&gt; foo</h2>");
+    }
+
+    #[test]
+    fn gfm_test_073() {
+        test("Foo\n\nbar\n---\nbaz\n", "<p>Foo</p><h2>bar</h2><p>baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_074() {
+        test("Foo\nbar\n\n---\n\nbaz\n", "<p>Foo\nbar</p><hr /><p>baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_075() {
+        test("Foo\nbar\n* * *\nbaz\n", "<p>Foo\nbar</p><hr /><p>baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_076() {
+        test("Foo\nbar\n\\---\nbaz\n", "<p>Foo\nbar\n---\nbaz</p>");
+    }
+
+    #[test]
+    fn gfm_test_077() {
+        test("    a simple\n      indented code block\n", "<pre><code>a simple\n  indented code block</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_078() {
+        test("  - foo\n\n    bar\n", "<ul><li><p>foo</p><p>bar</p></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_079() {
+        test("1.  foo\n\n    - bar\n", "<ol><li><p>foo</p><ul><li>bar</li></ul></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_080() {
+        test("    <a/>\n    *hi*\n\n    - one\n", "<pre><code>&lt;a/&gt;\n*hi*\n\n- one</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_081() {
+        test("    chunk1\n\n    chunk2\n  \n \n \n    chunk3\n", "<pre><code>chunk1\n\nchunk2\n\n\n\nchunk3</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_082() {
+        test("    chunk1\n      \n      chunk2\n", "<pre><code>chunk1\n  \n  chunk2</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_083() {
+        test("Foo\n    bar\n", "<p>Foo\nbar</p>");
+    }
+
+    #[test]
+    fn gfm_test_084() {
+        test("    foo\nbar\n", "<pre><code>foo</code></pre><p>bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_085() {
+        test("# Heading\n    foo\nHeading\n------\n    foo\n----\n", "<h1>Heading</h1><pre><code>foo</code></pre><h2>Heading</h2><pre><code>foo</code></pre><hr />");
+    }
+
+    #[test]
+    fn gfm_test_086() {
+        test("        foo\n    bar\n", "<pre><code>    foo\nbar</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_087() {
+        test("\n    \n    foo\n    \n", "<pre><code>foo</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_088() {
+        test("    foo  \n", "<pre><code>foo  </code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_089() {
+        test("```\n<\n >\n```\n", "<pre><code>&lt;\n &gt;</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_090() {
+        test("~~~\n<\n >\n~~~\n", "<pre><code>&lt;\n &gt;</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_091() {
+        test("``\nfoo\n``\n", "<p><code>foo</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_092() {
+        test("```\naaa\n~~~\n```\n", "<pre><code>aaa\n~~~</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_093() {
+        test("~~~\naaa\n```\n~~~\n", "<pre><code>aaa\n```</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_094() {
+        test("````\naaa\n```\n``````\n", "<pre><code>aaa\n```</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_095() {
+        test("~~~~\naaa\n~~~\n~~~~\n", "<pre><code>aaa\n~~~</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_096() {
+        test("```\n", "<pre><code></code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_097() {
+        test("`````\n\n```\naaa\n", "<pre><code>```\naaa</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_098() {
+        test("> ```\n> aaa\n\nbbb\n", "<blockquote><pre><code>aaa</code></pre></blockquote><p>bbb</p>");
+    }
+
+    #[test]
+    fn gfm_test_099() {
+        test("```\n\n  \n```\n", "<pre><code>  </code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_100() {
+        test("```\n```\n", "<pre><code></code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_101() {
+        test(" ```\n aaa\naaa\n```\n", "<pre><code>aaa\naaa</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_102() {
+        test("  ```\naaa\n  aaa\naaa\n  ```\n", "<pre><code>aaa\naaa\naaa</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_103() {
+        test("   ```\n   aaa\n    aaa\n  aaa\n   ```\n", "<pre><code>aaa\n aaa\naaa</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_104() {
+        test("    ```\n    aaa\n    ```\n", "<pre><code>```\naaa\n```</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_105() {
+        test("```\naaa\n  ```\n", "<pre><code>aaa</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_106() {
+        test("   ```\naaa\n  ```\n", "<pre><code>aaa</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_107() {
+        test("```\naaa\n    ```\n", "<pre><code>aaa\n    ```</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_108() {
+        test("``` ```\naaa\n", "<p><code> </code>aaa</p>");
+    }
+
+    #[test]
+    fn gfm_test_109() {
+        test("~~~~~~\naaa\n~~~ ~~\n", "<pre><code>aaa\n~~~ ~~</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_110() {
+        test("foo\n```\nbar\n```\nbaz\n", "<p>foo</p><pre><code>bar</code></pre><p>baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_111() {
+        test("foo\n---\n~~~\nbar\n~~~\n# baz\n", "<h2>foo</h2><pre><code>bar</code></pre><h1>baz</h1>");
+    }
+
+    #[test]
+    fn gfm_test_112() {
+        test("```ruby\ndef foo(x)\n  return 3\nend\n```\n", "<pre><code class=\"language-ruby\">def foo(x)\n  return 3\nend</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_113() {
+        test("~~~~    ruby startline=3 $%@#$\ndef foo(x)\n  return 3\nend\n~~~~~~~\n", "<pre><code class=\"language-ruby\">def foo(x)\n  return 3\nend</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_114() {
+        test("````;\n````\n", "<pre><code class=\"language-;\"></code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_115() {
+        test("``` aa ```\nfoo\n", "<p><code>aa</code>foo</p>");
+    }
+
+    #[test]
+    fn gfm_test_116() {
+        test("~~~ aa ``` ~~~\nfoo\n~~~\n", "<pre><code class=\"language-aa\">foo</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_117() {
+        test("```\n``` aaa\n```\n", "<pre><code>``` aaa</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_118() {
+        test("<table><tr><td>\n<pre>\n**Hello**,\n\n_world_.\n</pre>\n</td></tr></table>\n", "<table><tr><td><pre>**Hello**,<p><em>world</em>.</pre></p></td></tr></table>");
+    }
+
+    #[test]
+    fn gfm_test_119() {
+        test("<table>\n  <tr>\n    <td>\n           hi\n    </td>\n  </tr>\n</table>\n\nokay.\n", "<table>  <tr>    <td>           hi\n    </td>  </tr></table><p>okay.</p>");
+    }
+
+    #[test]
+    fn gfm_test_120() {
+        test(" <div>\n  *hello*\n         <foo><a>\n", " <div>  *hello*\n         <foo><a>");
+    }
+
+    #[test]
+    fn gfm_test_121() {
+        test("</div>\n*foo*\n", "</div>*foo*\n");
+    }
+
+    #[test]
+    fn gfm_test_122() {
+        test("<DIV CLASS=\"foo\">\n\n*Markdown*\n\n</DIV>\n", "<DIV CLASS=\"foo\"><p><em>Markdown</em></p></DIV>");
+    }
+
+    #[test]
+    fn gfm_test_123() {
+        test("<div id=\"foo\"\n  class=\"bar\">\n</div>\n", "<div id=\"foo\"\n  class=\"bar\"></div>");
+    }
+
+    #[test]
+    fn gfm_test_124() {
+        test("<div id=\"foo\" class=\"bar\n  baz\">\n</div>\n", "<div id=\"foo\" class=\"bar\n  baz\"></div>");
+    }
+
+    #[test]
+    fn gfm_test_125() {
+        test("<div>\n*foo*\n\n*bar*\n", "<div>*foo*<p><em>bar</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_126() {
+        test("<div id=\"foo\"\n*hi*\n", "<div id=\"foo\"\n*hi*\n");
+    }
+
+    #[test]
+    fn gfm_test_127() {
+        test("<div class\nfoo\n", "<div class\nfoo\n");
+    }
+
+    #[test]
+    fn gfm_test_128() {
+        test("<div *???-&&&-<---\n*foo*\n", "<div *???-&&&-<---\n*foo*\n");
+    }
+
+    #[test]
+    fn gfm_test_129() {
+        test("<div><a href=\"bar\">*foo*</a></div>\n", "<div><a href=\"bar\">*foo*</a></div>");
+    }
+
+    #[test]
+    fn gfm_test_130() {
+        test("<table><tr><td>\nfoo\n</td></tr></table>\n", "<table><tr><td>foo</td></tr></table>");
+    }
+
+    #[test]
+    fn gfm_test_131() {
+        test("<div></div>\n``` c\nint x = 33;\n```\n", "<div></div>``` c\nint x = 33;\n```\n");
+    }
+
+    #[test]
+    fn gfm_test_132() {
+        test("<a href=\"foo\">\n*bar*\n</a>\n", "<a href=\"foo\">*bar*</a>");
+    }
+
+    #[test]
+    fn gfm_test_133() {
+        test("<Warning>\n*bar*\n</Warning>\n", "<Warning>*bar*</Warning>");
+    }
+
+    #[test]
+    fn gfm_test_134() {
+        test("<i class=\"foo\">\n*bar*\n</i>\n", "<i class=\"foo\">*bar*</i>");
+    }
+
+    #[test]
+    fn gfm_test_135() {
+        test("</ins>\n*bar*\n", "</ins>*bar*\n");
+    }
+
+    #[test]
+    fn gfm_test_136() {
+        test("<del>\n*foo*\n</del>\n", "<del>*foo*</del>");
+    }
+
+    #[test]
+    fn gfm_test_137() {
+        test("<del>\n\n*foo*\n\n</del>\n", "<del><p><em>foo</em></p></del>");
+    }
+
+    #[test]
+    fn gfm_test_138() {
+        test("<del>*foo*</del>\n", "<p><del><em>foo</em></del></p>");
+    }
+
+    #[test]
+    fn gfm_test_139() {
+        test("<pre language=\"haskell\"><code>\nimport Text.HTML.TagSoup\n\nmain :: IO ()\nmain = print $ parseTags tags\n</code></pre>\nokay\n", "<pre language=\"haskell\"><code>import Text.HTML.TagSoup\n\nmain :: IO ()\nmain = print $ parseTags tags</code></pre><p>okay</p>");
+    }
+
+    #[test]
+    fn gfm_test_140() {
+        test("<script type=\"text/javascript\">\n// JavaScript example\n\ndocument.getElementById(\"demo\").innerHTML = \"Hello JavaScript!\";\n</script>\nokay\n", "<script type=\"text/javascript\">// JavaScript example\n\ndocument.getElementById(\"demo\").innerHTML = \"Hello JavaScript!\";</script><p>okay</p>");
+    }
+
+    #[test]
+    fn gfm_test_141() {
+        test("<style\n  type=\"text/css\">\nh1 {color:red;}\n\np {color:blue;}\n</style>\nokay\n", "<style\n  type=\"text/css\">h1 {color:red;}\n\np {color:blue;}</style><p>okay</p>");
+    }
+
+    #[test]
+    fn gfm_test_142() {
+        test("<style\n  type=\"text/css\">\n\nfoo\n", "<style\n  type=\"text/css\">\nfoo\n");
+    }
+
+    #[test]
+    fn gfm_test_143() {
+        test("> <div>\n> foo\n\nbar\n", "<blockquote><div>foo</blockquote><p>bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_144() {
+        test("- <div>\n- foo\n", "<ul><li><div></li><li>foo</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_145() {
+        test("<style>p{color:red;}</style>\n*foo*\n", "<style>p{color:red;}</style><p><em>foo</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_146() {
+        test("<!-- foo -->*bar*\n*baz*\n", "<!-- foo -->*bar*<p><em>baz</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_147() {
+        test("<script>\nfoo\n</script>1. *bar*\n", "<script>foo</script>1. *bar*\n");
+    }
+
+    #[test]
+    fn gfm_test_148() {
+        test("<!-- Foo\n\nbar\n   baz -->\nokay\n", "<!-- Foo\n\nbar\n   baz --><p>okay</p>");
+    }
+
+    #[test]
+    fn gfm_test_149() {
+        test("<?php\n\n  echo '>';\n\n?>\nokay\n", "<?php\n\n  echo '>';\n\n?><p>okay</p>");
+    }
+
+    #[test]
+    fn gfm_test_150() {
+        test("<!DOCTYPE html>\n", "<!DOCTYPE html>");
+    }
+
+    #[test]
+    fn gfm_test_151() {
+        test("<![CDATA[\nfunction matchwo(a,b)\n{\n  if (a < b && a < 0) then {\n    return 1;\n\n  } else {\n\n    return 0;\n  }\n}\n]]>\nokay\n", "<![CDATA[\nfunction matchwo(a,b)\n{\n  if (a < b && a < 0) then {\n    return 1;\n\n  } else {\n\n    return 0;\n  }\n}\n]]><p>okay</p>");
+    }
+
+    #[test]
+    fn gfm_test_152() {
+        test("  <!-- foo -->\n\n    <!-- foo -->\n", "  <!-- foo --><pre><code>&lt;!-- foo --&gt;</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_153() {
+        test("  <div>\n\n    <div>\n", "  <div><pre><code>&lt;div&gt;</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_154() {
+        test("Foo\n<div>\nbar\n</div>\n", "<p>Foo</p><div>bar</div>");
+    }
+
+    #[test]
+    fn gfm_test_155() {
+        test("<div>\nbar\n</div>\n*foo*\n", "<div>bar</div>*foo*\n");
+    }
+
+    #[test]
+    fn gfm_test_156() {
+        test("Foo\n<a href=\"bar\">\nbaz\n", "<p>Foo<a href=\"bar\">baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_157() {
+        test("<div>\n\n*Emphasized* text.\n\n</div>\n", "<div><p><em>Emphasized</em> text.</p></div>");
+    }
+
+    #[test]
+    fn gfm_test_158() {
+        test("<div>\n*Emphasized* text.\n</div>\n", "<div>*Emphasized* text.</div>");
+    }
+
+    #[test]
+    fn gfm_test_159() {
+        test("<table>\n\n<tr>\n\n<td>\nHi\n</td>\n\n</tr>\n\n</table>\n", "<table><tr><td>Hi</td></tr></table>");
+    }
+
+    #[test]
+    fn gfm_test_160() {
+        test("<table>\n\n  <tr>\n\n    <td>\n      Hi\n    </td>\n\n  </tr>\n\n</table>\n", "<table>  <tr><pre><code>&lt;td&gt;\n  Hi\n&lt;/td&gt;</code></pre>  </tr></table>");
+    }
+
+    #[test]
+    fn gfm_test_161() {
+        test("[foo]: /url \"title\"\n\n[foo]\n", "<p><a href=\"/url\" title=\"title\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_162() {
+        test("   [foo]: \n      /url  \n           'the title'  \n\n[foo]\n", "<p><a href=\"/url\" title=\"the title\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_163() {
+        test("[Foo*bar\\]]:my_(url) 'title (with parens)'\n\n[Foo*bar\\]]\n", "<p><a href=\"my_(url)\" title=\"title (with parens)\">Foo*bar]</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_164() {
+        test("[Foo bar]:\n<my url>\n'title'\n\n[Foo bar]\n", "<p><a href=\"my%20url\" title=\"title\">Foo bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_165() {
+        test("[foo]: /url '\ntitle\nline1\nline2\n'\n\n[foo]\n", "<p><a href=\"/url\" title=\"\ntitle\nline1\nline2\n\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_166() {
+        test("[foo]: /url 'title\n\nwith blank line'\n\n[foo]\n", "<p>[foo]: /url 'title</p><p>with blank line'</p><p>[foo]</p>");
+    }
+
+    #[test]
+    fn gfm_test_167() {
+        test("[foo]:\n/url\n\n[foo]\n", "<p><a href=\"/url\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_168() {
+        test("[foo]:\n\n[foo]\n", "<p>[foo]:</p><p>[foo]</p>");
+    }
+
+    #[test]
+    fn gfm_test_169() {
+        test("[foo]: <>\n\n[foo]\n", "<p><a href=\"\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_170() {
+        test("[foo]: <bar>(baz)\n\n[foo]\n", "<p>[foo]: <bar>(baz)</p><p>[foo]</p>");
+    }
+
+    #[test]
+    fn gfm_test_171() {
+        test("[foo]: /url\\bar\\*baz \"foo\\\"bar\\baz\"\n\n[foo]\n", "<p><a href=\"/url%5Cbar*baz\" title=\"foo&quot;bar\\baz\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_172() {
+        test("[foo]\n\n[foo]: url\n", "<p><a href=\"url\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_173() {
+        test("[foo]\n\n[foo]: first\n[foo]: second\n", "<p><a href=\"first\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_174() {
+        test("[FOO]: /url\n\n[Foo]\n", "<p><a href=\"/url\">Foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_175() {
+        test("[ΑΓΩ]: /φου\n\n[αγω]\n", "<p><a href=\"/%CF%86%CE%BF%CF%85\">αγω</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_176() {
+        test("[foo]: /url\n", "");
+    }
+
+    #[test]
+    fn gfm_test_177() {
+        test("[\nfoo\n]: /url\nbar\n", "<p>bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_178() {
+        test("[foo]: /url \"title\" ok\n", "<p>[foo]: /url &quot;title&quot; ok</p>");
+    }
+
+    #[test]
+    fn gfm_test_179() {
+        test("[foo]: /url\n\"title\" ok\n", "<p>&quot;title&quot; ok</p>");
+    }
+
+    #[test]
+    fn gfm_test_180() {
+        test("    [foo]: /url \"title\"\n\n[foo]\n", "<pre><code>[foo]: /url &quot;title&quot;</code></pre><p>[foo]</p>");
+    }
+
+    #[test]
+    fn gfm_test_181() {
+        test("```\n[foo]: /url\n```\n\n[foo]\n", "<pre><code>[foo]: /url</code></pre><p>[foo]</p>");
+    }
+
+    #[test]
+    fn gfm_test_182() {
+        test("Foo\n[bar]: /baz\n\n[bar]\n", "<p>Foo\n[bar]: /baz</p><p>[bar]</p>");
+    }
+
+    #[test]
+    fn gfm_test_183() {
+        test("# [Foo]\n[foo]: /url\n> bar\n", "<h1><a href=\"/url\">Foo</a></h1><blockquote><p>bar</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_184() {
+        test("[foo]: /url\nbar\n===\n[foo]\n", "<h1>bar</h1><p><a href=\"/url\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_185() {
+        test("[foo]: /url\n===\n[foo]\n", "<p>===<a href=\"/url\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_186() {
+        test("[foo]: /foo-url \"foo\"\n[bar]: /bar-url\n  \"bar\"\n[baz]: /baz-url\n\n[foo],\n[bar],\n[baz]\n", "<p><a href=\"/foo-url\" title=\"foo\">foo</a>,<a href=\"/bar-url\" title=\"bar\">bar</a>,<a href=\"/baz-url\">baz</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_187() {
+        test("[foo]\n\n> [foo]: /url\n", "<p><a href=\"/url\">foo</a></p><blockquote></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_188() {
+        test("[foo]: /url\n", "");
+    }
+
+    #[test]
+    fn gfm_test_189() {
+        test("aaa\n\nbbb\n", "<p>aaa</p><p>bbb</p>");
+    }
+
+    #[test]
+    fn gfm_test_190() {
+        test("aaa\nbbb\n\nccc\nddd\n", "<p>aaa\nbbb</p><p>ccc\nddd</p>");
+    }
+
+    #[test]
+    fn gfm_test_191() {
+        test("aaa\n\n\nbbb\n", "<p>aaa</p><p>bbb</p>");
+    }
+
+    #[test]
+    fn gfm_test_192() {
+        test("  aaa\n bbb\n", "<p>aaa\nbbb</p>");
+    }
+
+    #[test]
+    fn gfm_test_193() {
+        test("aaa\n             bbb\n                                       ccc\n", "<p>aaa\nbbb\nccc</p>");
+    }
+
+    #[test]
+    fn gfm_test_194() {
+        test("   aaa\nbbb\n", "<p>aaa\nbbb</p>");
+    }
+
+    #[test]
+    fn gfm_test_195() {
+        test("    aaa\nbbb\n", "<pre><code>aaa</code></pre><p>bbb</p>");
+    }
+
+    #[test]
+    fn gfm_test_196() {
+        test("aaa     \nbbb     \n", "<p>aaa<br />bbb</p>");
+    }
+
+    #[test]
+    fn gfm_test_197() {
+        test("  \n\naaa\n  \n\n# aaa\n\n  \n", "<p>aaa</p><h1>aaa</h1>");
+    }
+
+    #[test]
+    fn gfm_test_198() {
+        test("| foo | bar |\n| --- | --- |\n| baz | bim |\n", "<table><thead><tr><th>foo</th><th>bar</th></tr></thead><tbody><tr><td>baz</td><td>bim</td></tr></tbody></table>");
+    }
+
+    #[test]
+    fn gfm_test_199() {
+        test("| abc | defghi |\n:-: | -----------:\nbar | baz\n", "<table><thead><tr><th align=\"center\">abc</th><th align=\"right\">defghi</th></tr></thead><tbody><tr><td align=\"center\">bar</td><td align=\"right\">baz</td></tr></tbody></table>");
+    }
+
+    #[test]
+    fn gfm_test_200() {
+        test("| f\\|oo  |\n| ------ |\n| b `\\|` az |\n| b **\\|** im |\n", "<table><thead><tr><th>f|oo</th></tr></thead><tbody><tr><td>b <code>|</code> az</td></tr><tr><td>b <strong>|</strong> im</td></tr></tbody></table>");
+    }
+
+    #[test]
+    fn gfm_test_201() {
+        test("| abc | def |\n| --- | --- |\n| bar | baz |\n> bar\n", "<table><thead><tr><th>abc</th><th>def</th></tr></thead><tbody><tr><td>bar</td><td>baz</td></tr></tbody></table><blockquote><p>bar</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_202() {
+        test("| abc | def |\n| --- | --- |\n| bar | baz |\nbar\n\nbar\n", "<table><thead><tr><th>abc</th><th>def</th></tr></thead><tbody><tr><td>bar</td><td>baz</td></tr><tr><td>bar</td><td></td></tr></tbody></table><p>bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_203() {
+        test("| abc | def |\n| --- |\n| bar |\n", "<p>| abc | def |\n| --- |\n| bar |</p>");
+    }
+
+    #[test]
+    fn gfm_test_204() {
+        test("| abc | def |\n| --- | --- |\n| bar |\n| bar | baz | boo |\n", "<table><thead><tr><th>abc</th><th>def</th></tr></thead><tbody><tr><td>bar</td><td></td></tr><tr><td>bar</td><td>baz</td></tr></tbody></table>");
+    }
+
+    #[test]
+    fn gfm_test_205() {
+        test("| abc | def |\n| --- | --- |\n", "<table><thead><tr><th>abc</th><th>def</th></tr></thead></table>");
+    }
+
+    #[test]
+    fn gfm_test_206() {
+        test("> # Foo\n> bar\n> baz\n", "<blockquote><h1>Foo</h1><p>bar\nbaz</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_207() {
+        test("># Foo\n>bar\n> baz\n", "<blockquote><h1>Foo</h1><p>bar\nbaz</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_208() {
+        test("   > # Foo\n   > bar\n > baz\n", "<blockquote><h1>Foo</h1><p>bar\nbaz</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_209() {
+        test("    > # Foo\n    > bar\n    > baz\n", "<pre><code>&gt; # Foo\n&gt; bar\n&gt; baz</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_210() {
+        test("> # Foo\n> bar\nbaz\n", "<blockquote><h1>Foo</h1><p>bar\nbaz</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_211() {
+        test("> bar\nbaz\n> foo\n", "<blockquote><p>bar\nbaz\nfoo</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_212() {
+        test("> foo\n---\n", "<blockquote><p>foo</p></blockquote><hr />");
+    }
+
+    #[test]
+    fn gfm_test_213() {
+        test("> - foo\n- bar\n", "<blockquote><ul><li>foo</li></ul></blockquote><ul><li>bar</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_214() {
+        test(">     foo\n    bar\n", "<blockquote><pre><code>foo</code></pre></blockquote><pre><code>bar</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_215() {
+        test("> ```\nfoo\n```\n", "<blockquote><pre><code></code></pre></blockquote><p>foo</p><pre><code></code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_216() {
+        test("> foo\n    - bar\n", "<blockquote><p>foo\n- bar</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_217() {
+        test(">\n", "<blockquote></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_218() {
+        test(">\n>  \n> \n", "<blockquote></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_219() {
+        test(">\n> foo\n>  \n", "<blockquote><p>foo</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_220() {
+        test("> foo\n\n> bar\n", "<blockquote><p>foo</p></blockquote><blockquote><p>bar</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_221() {
+        test("> foo\n> bar\n", "<blockquote><p>foo\nbar</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_222() {
+        test("> foo\n>\n> bar\n", "<blockquote><p>foo</p><p>bar</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_223() {
+        test("foo\n> bar\n", "<p>foo</p><blockquote><p>bar</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_224() {
+        test("> aaa\n***\n> bbb\n", "<blockquote><p>aaa</p></blockquote><hr /><blockquote><p>bbb</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_225() {
+        test("> bar\nbaz\n", "<blockquote><p>bar\nbaz</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_226() {
+        test("> bar\n\nbaz\n", "<blockquote><p>bar</p></blockquote><p>baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_227() {
+        test("> bar\n>\nbaz\n", "<blockquote><p>bar</p></blockquote><p>baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_228() {
+        test("> > > foo\nbar\n", "<blockquote><blockquote><blockquote><p>foo\nbar</p></blockquote></blockquote></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_229() {
+        test(">>> foo\n> bar\n>>baz\n", "<blockquote><blockquote><blockquote><p>foo\nbar\nbaz</p></blockquote></blockquote></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_230() {
+        test(">     code\n\n>    not code\n", "<blockquote><pre><code>code</code></pre></blockquote><blockquote><p>not code</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_231() {
+        test("A paragraph\nwith two lines.\n\n    indented code\n\n> A block quote.\n", "<p>A paragraph\nwith two lines.</p><pre><code>indented code</code></pre><blockquote><p>A block quote.</p></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_232() {
+        test("1.  A paragraph\n    with two lines.\n\n        indented code\n\n    > A block quote.\n", "<ol><li><p>A paragraph\nwith two lines.</p><pre><code>indented code</code></pre><blockquote><p>A block quote.</p></blockquote></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_233() {
+        test("- one\n\n two\n", "<ul><li>one</li></ul><p>two</p>");
+    }
+
+    #[test]
+    fn gfm_test_234() {
+        test("- one\n\n  two\n", "<ul><li><p>one</p><p>two</p></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_235() {
+        test(" -    one\n\n     two\n", "<ul><li>one</li></ul><pre><code> two</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_236() {
+        test(" -    one\n\n      two\n", "<ul><li><p>one</p><p>two</p></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_237() {
+        test("   > > 1.  one\n>>\n>>     two\n", "<blockquote><blockquote><ol><li><p>one</p><p>two</p></li></ol></blockquote></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_238() {
+        test(">>- one\n>>\n  >  > two\n", "<blockquote><blockquote><ul><li>one</li></ul><p>two</p></blockquote></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_239() {
+        test("-one\n\n2.two\n", "<p>-one</p><p>2.two</p>");
+    }
+
+    #[test]
+    fn gfm_test_240() {
+        test("- foo\n\n\n  bar\n", "<ul><li><p>foo</p><p>bar</p></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_241() {
+        test("1.  foo\n\n    ```\n    bar\n    ```\n\n    baz\n\n    > bam\n", "<ol><li><p>foo</p><pre><code>bar</code></pre><p>baz</p><blockquote><p>bam</p></blockquote></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_242() {
+        test("- Foo\n\n      bar\n\n\n      baz\n", "<ul><li><p>Foo</p><pre><code>bar\n\n\nbaz</code></pre></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_243() {
+        test("123456789. ok\n", "<ol start=\"123456789\"><li>ok</li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_244() {
+        test("1234567890. not ok\n", "<p>1234567890. not ok</p>");
+    }
+
+    #[test]
+    fn gfm_test_245() {
+        test("0. ok\n", "<ol start=\"0\"><li>ok</li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_246() {
+        test("003. ok\n", "<ol start=\"3\"><li>ok</li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_247() {
+        test("-1. not ok\n", "<p>-1. not ok</p>");
+    }
+
+    #[test]
+    fn gfm_test_248() {
+        test("- foo\n\n      bar\n", "<ul><li><p>foo</p><pre><code>bar</code></pre></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_249() {
+        test("  10.  foo\n\n           bar\n", "<ol start=\"10\"><li><p>foo</p><pre><code>bar</code></pre></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_250() {
+        test("    indented code\n\nparagraph\n\n    more code\n", "<pre><code>indented code</code></pre><p>paragraph</p><pre><code>more code</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_251() {
+        test("1.     indented code\n\n   paragraph\n\n       more code\n", "<ol><li><pre><code>indented code</code></pre><p>paragraph</p><pre><code>more code</code></pre></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_252() {
+        test("1.      indented code\n\n   paragraph\n\n       more code\n", "<ol><li><pre><code> indented code</code></pre><p>paragraph</p><pre><code>more code</code></pre></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_253() {
+        test("   foo\n\nbar\n", "<p>foo</p><p>bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_254() {
+        test("-    foo\n\n  bar\n", "<ul><li>foo</li></ul><p>bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_255() {
+        test("-  foo\n\n   bar\n", "<ul><li><p>foo</p><p>bar</p></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_256() {
+        test("-\n  foo\n-\n  ```\n  bar\n  ```\n-\n      baz\n", "<ul><li>foo</li><li><pre><code>bar</code></pre></li><li><pre><code>baz</code></pre></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_257() {
+        test("-   \n  foo\n", "<ul><li>foo</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_258() {
+        test("-\n\n  foo\n", "<ul><li></li></ul><p>foo</p>");
+    }
+
+    #[test]
+    fn gfm_test_259() {
+        test("- foo\n-\n- bar\n", "<ul><li>foo</li><li></li><li>bar</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_260() {
+        test("- foo\n-   \n- bar\n", "<ul><li>foo</li><li></li><li>bar</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_261() {
+        test("1. foo\n2.\n3. bar\n", "<ol><li>foo</li><li></li><li>bar</li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_262() {
+        test("*\n", "<ul><li></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_263() {
+        test("foo\n*\n\nfoo\n1.\n", "<p>foo\n*</p><p>foo\n1.</p>");
+    }
+
+    #[test]
+    fn gfm_test_264() {
+        test(" 1.  A paragraph\n     with two lines.\n\n         indented code\n\n     > A block quote.\n", "<ol><li><p>A paragraph\nwith two lines.</p><pre><code>indented code</code></pre><blockquote><p>A block quote.</p></blockquote></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_265() {
+        test("  1.  A paragraph\n      with two lines.\n\n          indented code\n\n      > A block quote.\n", "<ol><li><p>A paragraph\nwith two lines.</p><pre><code>indented code</code></pre><blockquote><p>A block quote.</p></blockquote></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_266() {
+        test("   1.  A paragraph\n       with two lines.\n\n           indented code\n\n       > A block quote.\n", "<ol><li><p>A paragraph\nwith two lines.</p><pre><code>indented code</code></pre><blockquote><p>A block quote.</p></blockquote></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_267() {
+        test("    1.  A paragraph\n        with two lines.\n\n            indented code\n\n        > A block quote.\n", "<pre><code>1.  A paragraph\n    with two lines.\n\n        indented code\n\n    &gt; A block quote.</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_268() {
+        test("  1.  A paragraph\nwith two lines.\n\n          indented code\n\n      > A block quote.\n", "<ol><li><p>A paragraph\nwith two lines.</p><pre><code>indented code</code></pre><blockquote><p>A block quote.</p></blockquote></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_269() {
+        test("  1.  A paragraph\n    with two lines.\n", "<ol><li>A paragraph\nwith two lines.</li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_270() {
+        test("> 1. > Blockquote\ncontinued here.\n", "<blockquote><ol><li><blockquote><p>Blockquote\ncontinued here.</p></blockquote></li></ol></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_271() {
+        test("> 1. > Blockquote\n> continued here.\n", "<blockquote><ol><li><blockquote><p>Blockquote\ncontinued here.</p></blockquote></li></ol></blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_272() {
+        test("- foo\n  - bar\n    - baz\n      - boo\n", "<ul><li>foo<ul><li>bar<ul><li>baz<ul><li>boo</li></ul></li></ul></li></ul></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_273() {
+        test("- foo\n - bar\n  - baz\n   - boo\n", "<ul><li>foo</li><li>bar</li><li>baz</li><li>boo</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_274() {
+        test("10) foo\n    - bar\n", "<ol start=\"10\"><li>foo<ul><li>bar</li></ul></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_275() {
+        test("10) foo\n   - bar\n", "<ol start=\"10\"><li>foo</li></ol><ul><li>bar</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_276() {
+        test("- - foo\n", "<ul><li><ul><li>foo</li></ul></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_277() {
+        test("1. - 2. foo\n", "<ol><li><ul><li><ol start=\"2\"><li>foo</li></ol></li></ul></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_278() {
+        test("- # Foo\n- Bar\n  ---\n  baz\n", "<ul><li><h1>Foo</h1></li><li><h2>Bar</h2>baz</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_279() {
+        test("- [ ] foo\n- [x] bar\n", "<ul><li><input disabled=\"\" type=\"checkbox\"> foo</li><li><input checked=\"\" disabled=\"\" type=\"checkbox\"> bar</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_280() {
+        test("- [x] foo\n  - [ ] bar\n  - [x] baz\n- [ ] bim\n", "<ul><li><input checked=\"\" disabled=\"\" type=\"checkbox\"> foo<ul><li><input disabled=\"\" type=\"checkbox\"> bar</li><li><input checked=\"\" disabled=\"\" type=\"checkbox\"> baz</li></ul></li><li><input disabled=\"\" type=\"checkbox\"> bim</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_281() {
+        test("- foo\n- bar\n+ baz\n", "<ul><li>foo</li><li>bar</li></ul><ul><li>baz</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_282() {
+        test("1. foo\n2. bar\n3) baz\n", "<ol><li>foo</li><li>bar</li></ol><ol start=\"3\"><li>baz</li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_283() {
+        test("Foo\n- bar\n- baz\n", "<p>Foo</p><ul><li>bar</li><li>baz</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_284() {
+        test("The number of windows in my house is\n14.  The number of doors is 6.\n", "<p>The number of windows in my house is\n14.  The number of doors is 6.</p>");
+    }
+
+    #[test]
+    fn gfm_test_285() {
+        test("The number of windows in my house is\n1.  The number of doors is 6.\n", "<p>The number of windows in my house is</p><ol><li>The number of doors is 6.</li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_286() {
+        test("- foo\n\n- bar\n\n\n- baz\n", "<ul><li><p>foo</p></li><li><p>bar</p></li><li><p>baz</p></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_287() {
+        test("- foo\n  - bar\n    - baz\n\n\n      bim\n", "<ul><li>foo<ul><li>bar<ul><li><p>baz</p><p>bim</p></li></ul></li></ul></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_288() {
+        test("- foo\n- bar\n\n<!-- -->\n\n- baz\n- bim\n", "<ul><li>foo</li><li>bar</li></ul><!-- --><ul><li>baz</li><li>bim</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_289() {
+        test("-   foo\n\n    notcode\n\n-   foo\n\n<!-- -->\n\n    code\n", "<ul><li><p>foo</p><p>notcode</p></li><li><p>foo</p></li></ul><!-- --><pre><code>code</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_290() {
+        test("- a\n - b\n  - c\n   - d\n  - e\n - f\n- g\n", "<ul><li>a</li><li>b</li><li>c</li><li>d</li><li>e</li><li>f</li><li>g</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_291() {
+        test("1. a\n\n  2. b\n\n   3. c\n", "<ol><li><p>a</p></li><li><p>b</p></li><li><p>c</p></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_292() {
+        test("- a\n - b\n  - c\n   - d\n    - e\n", "<ul><li>a</li><li>b</li><li>c</li><li>d\n- e</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_293() {
+        test("1. a\n\n  2. b\n\n    3. c\n", "<ol><li><p>a</p></li><li><p>b</p></li></ol><pre><code>3. c</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_294() {
+        test("- a\n- b\n\n- c\n", "<ul><li><p>a</p></li><li><p>b</p></li><li><p>c</p></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_295() {
+        test("* a\n*\n\n* c\n", "<ul><li><p>a</p></li><li></li><li><p>c</p></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_296() {
+        test("- a\n- b\n\n  c\n- d\n", "<ul><li><p>a</p></li><li><p>b</p><p>c</p></li><li><p>d</p></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_297() {
+        test("- a\n- b\n\n  [ref]: /url\n- d\n", "<ul><li><p>a</p></li><li><p>b</p></li><li><p>d</p></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_298() {
+        test("- a\n- ```\n  b\n\n\n  ```\n- c\n", "<ul><li>a</li><li><pre><code>b\n\n</code></pre></li><li>c</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_299() {
+        test("- a\n  - b\n\n    c\n- d\n", "<ul><li>a<ul><li><p>b</p><p>c</p></li></ul></li><li>d</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_300() {
+        test("* a\n  > b\n  >\n* c\n", "<ul><li>a<blockquote><p>b</p></blockquote></li><li>c</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_301() {
+        test("- a\n  > b\n  ```\n  c\n  ```\n- d\n", "<ul><li>a<blockquote><p>b</p></blockquote><pre><code>c</code></pre></li><li>d</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_302() {
+        test("- a\n", "<ul><li>a</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_303() {
+        test("- a\n  - b\n", "<ul><li>a<ul><li>b</li></ul></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_304() {
+        test("1. ```\n   foo\n   ```\n\n   bar\n", "<ol><li><pre><code>foo</code></pre><p>bar</p></li></ol>");
+    }
+
+    #[test]
+    fn gfm_test_305() {
+        test("* foo\n  * bar\n\n  baz\n", "<ul><li><p>foo</p><ul><li>bar</li></ul><p>baz</p></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_306() {
+        test("- a\n  - b\n  - c\n\n- d\n  - e\n  - f\n", "<ul><li><p>a</p><ul><li>b</li><li>c</li></ul></li><li><p>d</p><ul><li>e</li><li>f</li></ul></li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_307() {
+        test("`hi`lo`\n", "<p><code>hi</code>lo`</p>");
+    }
+
+    #[test]
+    fn gfm_test_308() {
+        test("\\!\\\"\\#\\$\\%\\&\\'\\(\\)\\*\\+\\,\\-\\.\\/\\:\\;\\<\\=\\>\\?\\@\\[\\\\\\]\\^\\_\\`\\{\\|\\}\\~\n", "<p>!&quot;#$%&amp;'()*+,-./:;&lt;=&gt;?@[\\]^_`{|}~</p>");
+    }
+
+    #[test]
+    fn gfm_test_309() {
+        test("\\\t\\A\\a\\ \\3\\φ\\«\n", "<p>\\\t\\A\\a\\ \\3\\φ\\«</p>");
+    }
+
+    #[test]
+    fn gfm_test_310() {
+        test("\\*not emphasized*\n\\<br/> not a tag\n\\[not a link](/foo)\n\\`not code`\n1\\. not a list\n\\* not a list\n\\# not a heading\n\\[foo]: /url \"not a reference\"\n\\&ouml; not a character entity\n", "<p>*not emphasized*\n&lt;br/&gt; not a tag\n[not a link](/foo)\n`not code`\n1. not a list\n* not a list\n# not a heading\n[foo]: /url &quot;not a reference&quot;\n&amp;ouml; not a character entity</p>");
+    }
+
+    #[test]
+    fn gfm_test_311() {
+        test("\\\\*emphasis*\n", "<p>\\<em>emphasis</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_312() {
+        test("foo\\\nbar\n", "<p>foo<br />bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_313() {
+        test("`` \\[\\` ``\n", "<p><code>\\[\\`</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_314() {
+        test("    \\[\\]\n", "<pre><code>\\[\\]</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_315() {
+        test("~~~\n\\[\\]\n~~~\n", "<pre><code>\\[\\]</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_316() {
+        test("<http://example.com?find=\\*>\n", "<p><a href=\"http://example.com?find=%5C*\">http://example.com?find=\\*</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_317() {
+        test("<a href=\"/bar\\/)\">\n", "<a href=\"/bar\\/)\">");
+    }
+
+    #[test]
+    fn gfm_test_318() {
+        test("[foo](/bar\\* \"ti\\*tle\")\n", "<p><a href=\"/bar*\" title=\"ti*tle\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_319() {
+        test("[foo]\n\n[foo]: /bar\\* \"ti\\*tle\"\n", "<p><a href=\"/bar*\" title=\"ti*tle\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_320() {
+        test("``` foo\\+bar\nfoo\n```\n", "<pre><code class=\"language-foo+bar\">foo</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_321() {
+        test("&nbsp; &amp; &copy; &AElig; &Dcaron;\n&frac34; &HilbertSpace; &DifferentialD;\n&ClockwiseContourIntegral; &ngE;\n", "<p>  &amp; © Æ Ď\n¾ ℋ ⅆ\n∲ ≧̸</p>");
+    }
+
+    #[test]
+    fn gfm_test_322() {
+        test("&#35; &#1234; &#992; &#0;\n", "<p># Ӓ Ϡ �</p>");
+    }
+
+    #[test]
+    fn gfm_test_323() {
+        test("&#X22; &#XD06; &#xcab;\n", "<p>&quot; ആ ಫ</p>");
+    }
+
+    #[test]
+    fn gfm_test_324() {
+        test("&nbsp &x; &#; &#x;\n&#87654321;\n&#abcdef0;\n&ThisIsNotDefined; &hi?;\n", "<p>&amp;nbsp &amp;x; &amp;#; &amp;#x;\n&amp;#87654321;\n&amp;#abcdef0;\n&amp;ThisIsNotDefined; &amp;hi?;</p>");
+    }
+
+    #[test]
+    fn gfm_test_325() {
+        test("&copy\n", "<p>&amp;copy</p>");
+    }
+
+    #[test]
+    fn gfm_test_326() {
+        test("&MadeUpEntity;\n", "<p>&amp;MadeUpEntity;</p>");
+    }
+
+    #[test]
+    fn gfm_test_327() {
+        test("<a href=\"&ouml;&ouml;.html\">\n", "<a href=\"&ouml;&ouml;.html\">");
+    }
+
+    #[test]
+    fn gfm_test_328() {
+        test("[foo](/f&ouml;&ouml; \"f&ouml;&ouml;\")\n", "<p><a href=\"/f%C3%B6%C3%B6\" title=\"föö\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_329() {
+        test("[foo]\n\n[foo]: /f&ouml;&ouml; \"f&ouml;&ouml;\"\n", "<p><a href=\"/f%C3%B6%C3%B6\" title=\"föö\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_330() {
+        test("``` f&ouml;&ouml;\nfoo\n```\n", "<pre><code class=\"language-föö\">foo</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_331() {
+        test("`f&ouml;&ouml;`\n", "<p><code>f&amp;ouml;&amp;ouml;</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_332() {
+        test("    f&ouml;f&ouml;\n", "<pre><code>f&amp;ouml;f&amp;ouml;</code></pre>");
+    }
+
+    #[test]
+    fn gfm_test_333() {
+        test("&#42;foo&#42;\n*foo*\n", "<p>*foo*<em>foo</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_334() {
+        test("&#42; foo\n\n* foo\n", "<p>* foo</p><ul><li>foo</li></ul>");
+    }
+
+    #[test]
+    fn gfm_test_335() {
+        test("foo&#10;&#10;bar\n", "<p>foo\n\nbar</p>");
+    }
+
+    #[test]
+    fn gfm_test_336() {
+        test("&#9;foo\n", "<p>\tfoo</p>");
+    }
+
+    #[test]
+    fn gfm_test_337() {
+        test("[a](url &quot;tit&quot;)\n", "<p>[a](url &quot;tit&quot;)</p>");
+    }
+
+    #[test]
+    fn gfm_test_338() {
+        test("`foo`\n", "<p><code>foo</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_339() {
+        test("`` foo ` bar ``\n", "<p><code>foo ` bar</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_340() {
+        test("` `` `\n", "<p><code>``</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_341() {
+        test("`  ``  `\n", "<p><code> `` </code></p>");
+    }
+
+    #[test]
+    fn gfm_test_342() {
+        test("` a`\n", "<p><code> a</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_343() {
+        test("` b `\n", "<p><code> b </code></p>");
+    }
+
+    #[test]
+    fn gfm_test_344() {
+        test("` `\n`  `\n", "<p><code> </code><code>  </code></p>");
+    }
+
+    #[test]
+    fn gfm_test_345() {
+        test("``\nfoo\nbar  \nbaz\n``\n", "<p><code>foo bar   baz</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_346() {
+        test("``\nfoo \n``\n", "<p><code>foo </code></p>");
+    }
+
+    #[test]
+    fn gfm_test_347() {
+        test("`foo   bar \nbaz`\n", "<p><code>foo   bar  baz</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_348() {
+        test("`foo\\`bar`\n", "<p><code>foo\\</code>bar`</p>");
+    }
+
+    #[test]
+    fn gfm_test_349() {
+        test("``foo`bar``\n", "<p><code>foo`bar</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_350() {
+        test("` foo `` bar `\n", "<p><code>foo `` bar</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_351() {
+        test("*foo`*`\n", "<p>*foo<code>*</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_352() {
+        test("[not a `link](/foo`)\n", "<p>[not a <code>link](/foo</code>)</p>");
+    }
+
+    #[test]
+    fn gfm_test_353() {
+        test("`<a href=\"`\">`\n", "<p><code>&lt;a href=&quot;</code>&quot;&gt;`</p>");
+    }
+
+    #[test]
+    fn gfm_test_354() {
+        test("<a href=\"`\">`\n", "<p><a href=\"`\">`</p>");
+    }
+
+    #[test]
+    fn gfm_test_355() {
+        test("`<http://foo.bar.`baz>`\n", "<p><code>&lt;http://foo.bar.</code>baz&gt;`</p>");
+    }
+
+    #[test]
+    fn gfm_test_356() {
+        test("<http://foo.bar.`baz>`\n", "<p><a href=\"http://foo.bar.%60baz\">http://foo.bar.`baz</a>`</p>");
+    }
+
+    #[test]
+    fn gfm_test_357() {
+        test("```foo``\n", "<p>```foo``</p>");
+    }
+
+    #[test]
+    fn gfm_test_358() {
+        test("`foo\n", "<p>`foo</p>");
+    }
+
+    #[test]
+    fn gfm_test_359() {
+        test("`foo``bar``\n", "<p>`foo<code>bar</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_360() {
+        test("*foo bar*\n", "<p><em>foo bar</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_361() {
+        test("a * foo bar*\n", "<p>a * foo bar*</p>");
+    }
+
+    #[test]
+    fn gfm_test_362() {
+        test("a*\"foo\"*\n", "<p>a*&quot;foo&quot;*</p>");
+    }
+
+    #[test]
+    fn gfm_test_363() {
+        test("* a *\n", "<p>* a *</p>");
+    }
+
+    #[test]
+    fn gfm_test_364() {
+        test("foo*bar*\n", "<p>foo<em>bar</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_365() {
+        test("5*6*78\n", "<p>5<em>6</em>78</p>");
+    }
+
+    #[test]
+    fn gfm_test_366() {
+        test("_foo bar_\n", "<p><em>foo bar</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_367() {
+        test("_ foo bar_\n", "<p>_ foo bar_</p>");
+    }
+
+    #[test]
+    fn gfm_test_368() {
+        test("a_\"foo\"_\n", "<p>a_&quot;foo&quot;_</p>");
+    }
+
+    #[test]
+    fn gfm_test_369() {
+        test("foo_bar_\n", "<p>foo_bar_</p>");
+    }
+
+    #[test]
+    fn gfm_test_370() {
+        test("5_6_78\n", "<p>5_6_78</p>");
+    }
+
+    #[test]
+    fn gfm_test_371() {
+        test("пристаням_стремятся_\n", "<p>пристаням_стремятся_</p>");
+    }
+
+    #[test]
+    fn gfm_test_372() {
+        test("aa_\"bb\"_cc\n", "<p>aa_&quot;bb&quot;_cc</p>");
+    }
+
+    #[test]
+    fn gfm_test_373() {
+        test("foo-_(bar)_\n", "<p>foo-<em>(bar)</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_374() {
+        test("_foo*\n", "<p>_foo*</p>");
+    }
+
+    #[test]
+    fn gfm_test_375() {
+        test("*foo bar *\n", "<p>*foo bar *</p>");
+    }
+
+    #[test]
+    fn gfm_test_376() {
+        test("*foo bar\n*\n", "<p>*foo bar\n*</p>");
+    }
+
+    #[test]
+    fn gfm_test_377() {
+        test("*(*foo)\n", "<p>*(*foo)</p>");
+    }
+
+    #[test]
+    fn gfm_test_378() {
+        test("*(*foo*)*\n", "<p><em>(<em>foo</em>)</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_379() {
+        test("*foo*bar\n", "<p><em>foo</em>bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_380() {
+        test("_foo bar _\n", "<p>_foo bar _</p>");
+    }
+
+    #[test]
+    fn gfm_test_381() {
+        test("_(_foo)\n", "<p>_(_foo)</p>");
+    }
+
+    #[test]
+    fn gfm_test_382() {
+        test("_(_foo_)_\n", "<p><em>(<em>foo</em>)</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_383() {
+        test("_foo_bar\n", "<p>_foo_bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_384() {
+        test("_пристаням_стремятся\n", "<p>_пристаням_стремятся</p>");
+    }
+
+    #[test]
+    fn gfm_test_385() {
+        test("_foo_bar_baz_\n", "<p><em>foo_bar_baz</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_386() {
+        test("_(bar)_.\n", "<p><em>(bar)</em>.</p>");
+    }
+
+    #[test]
+    fn gfm_test_387() {
+        test("**foo bar**\n", "<p><strong>foo bar</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_388() {
+        test("** foo bar**\n", "<p>** foo bar**</p>");
+    }
+
+    #[test]
+    fn gfm_test_389() {
+        test("a**\"foo\"**\n", "<p>a**&quot;foo&quot;**</p>");
+    }
+
+    #[test]
+    fn gfm_test_390() {
+        test("foo**bar**\n", "<p>foo<strong>bar</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_391() {
+        test("__foo bar__\n", "<p><strong>foo bar</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_392() {
+        test("__ foo bar__\n", "<p>__ foo bar__</p>");
+    }
+
+    #[test]
+    fn gfm_test_393() {
+        test("__\nfoo bar__\n", "<p>__\nfoo bar__</p>");
+    }
+
+    #[test]
+    fn gfm_test_394() {
+        test("a__\"foo\"__\n", "<p>a__&quot;foo&quot;__</p>");
+    }
+
+    #[test]
+    fn gfm_test_395() {
+        test("foo__bar__\n", "<p>foo__bar__</p>");
+    }
+
+    #[test]
+    fn gfm_test_396() {
+        test("5__6__78\n", "<p>5__6__78</p>");
+    }
+
+    #[test]
+    fn gfm_test_397() {
+        test("пристаням__стремятся__\n", "<p>пристаням__стремятся__</p>");
+    }
+
+    #[test]
+    fn gfm_test_398() {
+        test("__foo, __bar__, baz__\n", "<p><strong>foo, <strong>bar</strong>, baz</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_399() {
+        test("foo-__(bar)__\n", "<p>foo-<strong>(bar)</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_400() {
+        test("**foo bar **\n", "<p>**foo bar **</p>");
+    }
+
+    #[test]
+    fn gfm_test_401() {
+        test("**(**foo)\n", "<p>**(**foo)</p>");
+    }
+
+    #[test]
+    fn gfm_test_402() {
+        test("*(**foo**)*\n", "<p><em>(<strong>foo</strong>)</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_403() {
+        test("**Gomphocarpus (*Gomphocarpus physocarpus*, syn.\n*Asclepias physocarpa*)**\n", "<p><strong>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.<em>Asclepias physocarpa</em>)</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_404() {
+        test("**foo \"*bar*\" foo**\n", "<p><strong>foo &quot;<em>bar</em>&quot; foo</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_405() {
+        test("**foo**bar\n", "<p><strong>foo</strong>bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_406() {
+        test("__foo bar __\n", "<p>__foo bar __</p>");
+    }
+
+    #[test]
+    fn gfm_test_407() {
+        test("__(__foo)\n", "<p>__(__foo)</p>");
+    }
+
+    #[test]
+    fn gfm_test_408() {
+        test("_(__foo__)_\n", "<p><em>(<strong>foo</strong>)</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_409() {
+        test("__foo__bar\n", "<p>__foo__bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_410() {
+        test("__пристаням__стремятся\n", "<p>__пристаням__стремятся</p>");
+    }
+
+    #[test]
+    fn gfm_test_411() {
+        test("__foo__bar__baz__\n", "<p><strong>foo__bar__baz</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_412() {
+        test("__(bar)__.\n", "<p><strong>(bar)</strong>.</p>");
+    }
+
+    #[test]
+    fn gfm_test_413() {
+        test("*foo [bar](/url)*\n", "<p><em>foo <a href=\"/url\">bar</a></em></p>");
+    }
+
+    #[test]
+    fn gfm_test_414() {
+        test("*foo\nbar*\n", "<p><em>foo\nbar</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_415() {
+        test("_foo __bar__ baz_\n", "<p><em>foo <strong>bar</strong> baz</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_416() {
+        test("_foo _bar_ baz_\n", "<p><em>foo <em>bar</em> baz</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_417() {
+        test("__foo_ bar_\n", "<p><em><em>foo</em> bar</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_418() {
+        test("*foo *bar**\n", "<p><em>foo <em>bar</em></em></p>");
+    }
+
+    #[test]
+    fn gfm_test_419() {
+        test("*foo **bar** baz*\n", "<p><em>foo <strong>bar</strong> baz</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_420() {
+        test("*foo**bar**baz*\n", "<p><em>foo<strong>bar</strong>baz</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_421() {
+        test("*foo**bar*\n", "<p><em>foo**bar</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_422() {
+        test("***foo** bar*\n", "<p><em><strong>foo</strong> bar</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_423() {
+        test("*foo **bar***\n", "<p><em>foo <strong>bar</strong></em></p>");
+    }
+
+    #[test]
+    fn gfm_test_424() {
+        test("*foo**bar***\n", "<p><em>foo<strong>bar</strong></em></p>");
+    }
+
+    #[test]
+    fn gfm_test_425() {
+        test("foo***bar***baz\n", "<p>foo<em><strong>bar</strong></em>baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_426() {
+        test("foo******bar*********baz\n", "<p>foo<strong><strong><strong>bar</strong></strong></strong>***baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_427() {
+        test("*foo **bar *baz* bim** bop*\n", "<p><em>foo <strong>bar <em>baz</em> bim</strong> bop</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_428() {
+        test("*foo [*bar*](/url)*\n", "<p><em>foo <a href=\"/url\"><em>bar</em></a></em></p>");
+    }
+
+    #[test]
+    fn gfm_test_429() {
+        test("** is not an empty emphasis\n", "<p>** is not an empty emphasis</p>");
+    }
+
+    #[test]
+    fn gfm_test_430() {
+        test("**** is not an empty strong emphasis\n", "<p>**** is not an empty strong emphasis</p>");
+    }
+
+    #[test]
+    fn gfm_test_431() {
+        test("**foo [bar](/url)**\n", "<p><strong>foo <a href=\"/url\">bar</a></strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_432() {
+        test("**foo\nbar**\n", "<p><strong>foo\nbar</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_433() {
+        test("__foo _bar_ baz__\n", "<p><strong>foo <em>bar</em> baz</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_434() {
+        test("__foo __bar__ baz__\n", "<p><strong>foo <strong>bar</strong> baz</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_435() {
+        test("____foo__ bar__\n", "<p><strong><strong>foo</strong> bar</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_436() {
+        test("**foo **bar****\n", "<p><strong>foo <strong>bar</strong></strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_437() {
+        test("**foo *bar* baz**\n", "<p><strong>foo <em>bar</em> baz</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_438() {
+        test("**foo*bar*baz**\n", "<p><strong>foo<em>bar</em>baz</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_439() {
+        test("***foo* bar**\n", "<p><strong><em>foo</em> bar</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_440() {
+        test("**foo *bar***\n", "<p><strong>foo <em>bar</em></strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_441() {
+        test("**foo *bar **baz**\nbim* bop**\n", "<p><strong>foo <em>bar <strong>baz</strong>bim</em> bop</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_442() {
+        test("**foo [*bar*](/url)**\n", "<p><strong>foo <a href=\"/url\"><em>bar</em></a></strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_443() {
+        test("__ is not an empty emphasis\n", "<p>__ is not an empty emphasis</p>");
+    }
+
+    #[test]
+    fn gfm_test_444() {
+        test("____ is not an empty strong emphasis\n", "<p>____ is not an empty strong emphasis</p>");
+    }
+
+    #[test]
+    fn gfm_test_445() {
+        test("foo ***\n", "<p>foo ***</p>");
+    }
+
+    #[test]
+    fn gfm_test_446() {
+        test("foo *\\**\n", "<p>foo <em>*</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_447() {
+        test("foo *_*\n", "<p>foo <em>_</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_448() {
+        test("foo *****\n", "<p>foo *****</p>");
+    }
+
+    #[test]
+    fn gfm_test_449() {
+        test("foo **\\***\n", "<p>foo <strong>*</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_450() {
+        test("foo **_**\n", "<p>foo <strong>_</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_451() {
+        test("**foo*\n", "<p>*<em>foo</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_452() {
+        test("*foo**\n", "<p><em>foo</em>*</p>");
+    }
+
+    #[test]
+    fn gfm_test_453() {
+        test("***foo**\n", "<p>*<strong>foo</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_454() {
+        test("****foo*\n", "<p>***<em>foo</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_455() {
+        test("**foo***\n", "<p><strong>foo</strong>*</p>");
+    }
+
+    #[test]
+    fn gfm_test_456() {
+        test("*foo****\n", "<p><em>foo</em>***</p>");
+    }
+
+    #[test]
+    fn gfm_test_457() {
+        test("foo ___\n", "<p>foo ___</p>");
+    }
+
+    #[test]
+    fn gfm_test_458() {
+        test("foo _\\__\n", "<p>foo <em>_</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_459() {
+        test("foo _*_\n", "<p>foo <em>*</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_460() {
+        test("foo _____\n", "<p>foo _____</p>");
+    }
+
+    #[test]
+    fn gfm_test_461() {
+        test("foo __\\___\n", "<p>foo <strong>_</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_462() {
+        test("foo __*__\n", "<p>foo <strong>*</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_463() {
+        test("__foo_\n", "<p>_<em>foo</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_464() {
+        test("_foo__\n", "<p><em>foo</em>_</p>");
+    }
+
+    #[test]
+    fn gfm_test_465() {
+        test("___foo__\n", "<p>_<strong>foo</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_466() {
+        test("____foo_\n", "<p>___<em>foo</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_467() {
+        test("__foo___\n", "<p><strong>foo</strong>_</p>");
+    }
+
+    #[test]
+    fn gfm_test_468() {
+        test("_foo____\n", "<p><em>foo</em>___</p>");
+    }
+
+    #[test]
+    fn gfm_test_469() {
+        test("**foo**\n", "<p><strong>foo</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_470() {
+        test("*_foo_*\n", "<p><em><em>foo</em></em></p>");
+    }
+
+    #[test]
+    fn gfm_test_471() {
+        test("__foo__\n", "<p><strong>foo</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_472() {
+        test("_*foo*_\n", "<p><em><em>foo</em></em></p>");
+    }
+
+    #[test]
+    fn gfm_test_473() {
+        test("****foo****\n", "<p><strong><strong>foo</strong></strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_474() {
+        test("____foo____\n", "<p><strong><strong>foo</strong></strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_475() {
+        test("******foo******\n", "<p><strong><strong><strong>foo</strong></strong></strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_476() {
+        test("***foo***\n", "<p><em><strong>foo</strong></em></p>");
+    }
+
+    #[test]
+    fn gfm_test_477() {
+        test("_____foo_____\n", "<p><em><strong><strong>foo</strong></strong></em></p>");
+    }
+
+    #[test]
+    fn gfm_test_478() {
+        test("*foo _bar* baz_\n", "<p><em>foo _bar</em> baz_</p>");
+    }
+
+    #[test]
+    fn gfm_test_479() {
+        test("*foo __bar *baz bim__ bam*\n", "<p><em>foo <strong>bar *baz bim</strong> bam</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_480() {
+        test("**foo **bar baz**\n", "<p>**foo <strong>bar baz</strong></p>");
+    }
+
+    #[test]
+    fn gfm_test_481() {
+        test("*foo *bar baz*\n", "<p>*foo <em>bar baz</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_482() {
+        test("*[bar*](/url)\n", "<p>*<a href=\"/url\">bar*</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_483() {
+        test("_foo [bar_](/url)\n", "<p>_foo <a href=\"/url\">bar_</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_484() {
+        test("*<img src=\"foo\" title=\"*\"/>\n", "<p>*<img src=\"foo\" title=\"*\"/></p>");
+    }
+
+    #[test]
+    fn gfm_test_485() {
+        test("**<a href=\"**\">\n", "<p>**<a href=\"**\"></p>");
+    }
+
+    #[test]
+    fn gfm_test_486() {
+        test("__<a href=\"__\">\n", "<p>__<a href=\"__\"></p>");
+    }
+
+    #[test]
+    fn gfm_test_487() {
+        test("*a `*`*\n", "<p><em>a <code>*</code></em></p>");
+    }
+
+    #[test]
+    fn gfm_test_488() {
+        test("_a `_`_\n", "<p><em>a <code>_</code></em></p>");
+    }
+
+    #[test]
+    fn gfm_test_489() {
+        test("**a<http://foo.bar/?q=**>\n", "<p>**a<a href=\"http://foo.bar/?q=**\">http://foo.bar/?q=**</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_490() {
+        test("__a<http://foo.bar/?q=__>\n", "<p>__a<a href=\"http://foo.bar/?q=__\">http://foo.bar/?q=__</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_491() {
+        test("~~Hi~~ Hello, world!\n", "<p><del>Hi</del> Hello, world!</p>");
+    }
+
+    #[test]
+    fn gfm_test_492() {
+        test("This ~~has a\n\nnew paragraph~~.\n", "<p>This ~~has a</p><p>new paragraph~~.</p>");
+    }
+
+    #[test]
+    fn gfm_test_493() {
+        test("[link](/uri \"title\")\n", "<p><a href=\"/uri\" title=\"title\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_494() {
+        test("[link](/uri)\n", "<p><a href=\"/uri\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_495() {
+        test("[link]()\n", "<p><a href=\"\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_496() {
+        test("[link](<>)\n", "<p><a href=\"\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_497() {
+        test("[link](/my uri)\n", "<p>[link](/my uri)</p>");
+    }
+
+    #[test]
+    fn gfm_test_498() {
+        test("[link](</my uri>)\n", "<p><a href=\"/my%20uri\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_499() {
+        test("[link](foo\nbar)\n", "<p>[link](foo\nbar)</p>");
+    }
+
+    #[test]
+    fn gfm_test_500() {
+        test("[link](<foo\nbar>)\n", "<p>[link](<foo\nbar>)</p>");
+    }
+
+    #[test]
+    fn gfm_test_501() {
+        test("[a](<b)c>)\n", "<p><a href=\"b)c\">a</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_502() {
+        test("[link](<foo\\>)\n", "<p>[link](&lt;foo&gt;)</p>");
+    }
+
+    #[test]
+    fn gfm_test_503() {
+        test("[a](<b)c\n[a](<b)c>\n[a](<b>c)\n", "<p>[a](&lt;b)c\n[a](&lt;b)c&gt;\n[a](<b>c)</p>");
+    }
+
+    #[test]
+    fn gfm_test_504() {
+        test("[link](\\(foo\\))\n", "<p><a href=\"(foo)\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_505() {
+        test("[link](foo(and(bar)))\n", "<p><a href=\"foo(and(bar))\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_506() {
+        test("[link](foo\\(and\\(bar\\))\n", "<p><a href=\"foo(and(bar)\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_507() {
+        test("[link](<foo(and(bar)>)\n", "<p><a href=\"foo(and(bar)\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_508() {
+        test("[link](foo\\)\\:)\n", "<p><a href=\"foo):\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_509() {
+        test("[link](#fragment)\n\n[link](http://example.com#fragment)\n\n[link](http://example.com?foo=3#frag)\n", "<p><a href=\"#fragment\">link</a></p><p><a href=\"http://example.com#fragment\">link</a></p><p><a href=\"http://example.com?foo=3#frag\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_510() {
+        test("[link](foo\\bar)\n", "<p><a href=\"foo%5Cbar\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_511() {
+        test("[link](foo%20b&auml;)\n", "<p><a href=\"foo%20b%C3%A4\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_512() {
+        test("[link](\"title\")\n", "<p><a href=\"%22title%22\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_513() {
+        test("[link](/url \"title\")\n[link](/url 'title')\n[link](/url (title))\n", "<p><a href=\"/url\" title=\"title\">link</a><a href=\"/url\" title=\"title\">link</a><a href=\"/url\" title=\"title\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_514() {
+        test("[link](/url \"title \\\"&quot;\")\n", "<p><a href=\"/url\" title=\"title &quot;&quot;\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_515() {
+        test("[link](/url \"title\")\n", "<p><a href=\"/url%C2%A0%22title%22\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_516() {
+        test("[link](/url \"title \"and\" title\")\n", "<p>[link](/url &quot;title &quot;and&quot; title&quot;)</p>");
+    }
+
+    #[test]
+    fn gfm_test_517() {
+        test("[link](/url 'title \"and\" title')\n", "<p><a href=\"/url\" title=\"title &quot;and&quot; title\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_518() {
+        test("[link](   /uri\n  \"title\"  )\n", "<p><a href=\"/uri\" title=\"title\">link</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_519() {
+        test("[link] (/uri)\n", "<p>[link] (/uri)</p>");
+    }
+
+    #[test]
+    fn gfm_test_520() {
+        test("[link [foo [bar]]](/uri)\n", "<p><a href=\"/uri\">link [foo [bar]]</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_521() {
+        test("[link] bar](/uri)\n", "<p>[link] bar](/uri)</p>");
+    }
+
+    #[test]
+    fn gfm_test_522() {
+        test("[link [bar](/uri)\n", "<p>[link <a href=\"/uri\">bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_523() {
+        test("[link \\[bar](/uri)\n", "<p><a href=\"/uri\">link [bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_524() {
+        test("[link *foo **bar** `#`*](/uri)\n", "<p><a href=\"/uri\">link <em>foo <strong>bar</strong> <code>#</code></em></a></p>");
+    }
+
+    #[test]
+    fn gfm_test_525() {
+        test("[![moon](moon.jpg)](/uri)\n", "<p><a href=\"/uri\"><img src=\"moon.jpg\" alt=\"moon\" /></a></p>");
+    }
+
+    #[test]
+    fn gfm_test_526() {
+        test("[foo [bar](/uri)](/uri)\n", "<p>[foo <a href=\"/uri\">bar</a>](/uri)</p>");
+    }
+
+    #[test]
+    fn gfm_test_527() {
+        test("[foo *[bar [baz](/uri)](/uri)*](/uri)\n", "<p>[foo <em>[bar <a href=\"/uri\">baz</a>](/uri)</em>](/uri)</p>");
+    }
+
+    #[test]
+    fn gfm_test_528() {
+        test("![[[foo](uri1)](uri2)](uri3)\n", "<p><img src=\"uri3\" alt=\"[foo](uri2)\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_529() {
+        test("*[foo*](/uri)\n", "<p>*<a href=\"/uri\">foo*</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_530() {
+        test("[foo *bar](baz*)\n", "<p><a href=\"baz*\">foo *bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_531() {
+        test("*foo [bar* baz]\n", "<p><em>foo [bar</em> baz]</p>");
+    }
+
+    #[test]
+    fn gfm_test_532() {
+        test("[foo <bar attr=\"](baz)\">\n", "<p>[foo <bar attr=\"](baz)\"></p>");
+    }
+
+    #[test]
+    fn gfm_test_533() {
+        test("[foo`](/uri)`\n", "<p>[foo<code>](/uri)</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_534() {
+        test("[foo<http://example.com/?search=](uri)>\n", "<p>[foo<a href=\"http://example.com/?search=%5D(uri)\">http://example.com/?search=](uri)</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_535() {
+        test("[foo][bar]\n\n[bar]: /url \"title\"\n", "<p><a href=\"/url\" title=\"title\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_536() {
+        test("[link [foo [bar]]][ref]\n\n[ref]: /uri\n", "<p><a href=\"/uri\">link [foo [bar]]</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_537() {
+        test("[link \\[bar][ref]\n\n[ref]: /uri\n", "<p><a href=\"/uri\">link [bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_538() {
+        test("[link *foo **bar** `#`*][ref]\n\n[ref]: /uri\n", "<p><a href=\"/uri\">link <em>foo <strong>bar</strong> <code>#</code></em></a></p>");
+    }
+
+    #[test]
+    fn gfm_test_539() {
+        test("[![moon](moon.jpg)][ref]\n\n[ref]: /uri\n", "<p><a href=\"/uri\"><img src=\"moon.jpg\" alt=\"moon\" /></a></p>");
+    }
+
+    #[test]
+    fn gfm_test_540() {
+        test("[foo [bar](/uri)][ref]\n\n[ref]: /uri\n", "<p>[foo <a href=\"/uri\">bar</a>]<a href=\"/uri\">ref</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_541() {
+        test("[foo *bar [baz][ref]*][ref]\n\n[ref]: /uri\n", "<p>[foo <em>bar <a href=\"/uri\">baz</a></em>]<a href=\"/uri\">ref</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_542() {
+        test("*[foo*][ref]\n\n[ref]: /uri\n", "<p>*<a href=\"/uri\">foo*</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_543() {
+        test("[foo *bar][ref]*\n\n[ref]: /uri\n", "<p><a href=\"/uri\">foo *bar</a>*</p>");
+    }
+
+    #[test]
+    fn gfm_test_544() {
+        test("[foo <bar attr=\"][ref]\">\n\n[ref]: /uri\n", "<p>[foo <bar attr=\"][ref]\"></p>");
+    }
+
+    #[test]
+    fn gfm_test_545() {
+        test("[foo`][ref]`\n\n[ref]: /uri\n", "<p>[foo<code>][ref]</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_546() {
+        test("[foo<http://example.com/?search=][ref]>\n\n[ref]: /uri\n", "<p>[foo<a href=\"http://example.com/?search=%5D%5Bref%5D\">http://example.com/?search=][ref]</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_547() {
+        test("[foo][BaR]\n\n[bar]: /url \"title\"\n", "<p><a href=\"/url\" title=\"title\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_548() {
+        test("[ẞ]\n\n[SS]: /url\n", "<p><a href=\"/url\">ẞ</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_549() {
+        test("[Foo\n  bar]: /url\n\n[Baz][Foo bar]\n", "<p><a href=\"/url\">Baz</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_550() {
+        test("[foo] [bar]\n\n[bar]: /url \"title\"\n", "<p>[foo] <a href=\"/url\" title=\"title\">bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_551() {
+        test("[foo]\n[bar]\n\n[bar]: /url \"title\"\n", "<p>[foo]<a href=\"/url\" title=\"title\">bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_552() {
+        test("[foo]: /url1\n\n[foo]: /url2\n\n[bar][foo]\n", "<p><a href=\"/url1\">bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_553() {
+        test("[bar][foo\\!]\n\n[foo!]: /url\n", "<p>[bar][foo!]</p>");
+    }
+
+    #[test]
+    fn gfm_test_554() {
+        test("[foo][ref[]\n\n[ref[]: /uri\n", "<p>[foo][ref[]</p><p>[ref[]: /uri</p>");
+    }
+
+    #[test]
+    fn gfm_test_555() {
+        test("[foo][ref[bar]]\n\n[ref[bar]]: /uri\n", "<p>[foo][ref[bar]]</p><p>[ref[bar]]: /uri</p>");
+    }
+
+    #[test]
+    fn gfm_test_556() {
+        test("[[[foo]]]\n\n[[[foo]]]: /url\n", "<p>[[[foo]]]</p><p>[[[foo]]]: /url</p>");
+    }
+
+    #[test]
+    fn gfm_test_557() {
+        test("[foo][ref\\[]\n\n[ref\\[]: /uri\n", "<p><a href=\"/uri\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_558() {
+        test("[bar\\\\]: /uri\n\n[bar\\\\]\n", "<p><a href=\"/uri\">bar\\</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_559() {
+        test("[]\n\n[]: /uri\n", "<p>[]</p><p>[]: /uri</p>");
+    }
+
+    #[test]
+    fn gfm_test_560() {
+        test("[\n ]\n\n[\n ]: /uri\n", "<p>[\n]</p><p>[\n]: /uri</p>");
+    }
+
+    #[test]
+    fn gfm_test_561() {
+        test("[foo][]\n\n[foo]: /url \"title\"\n", "<p><a href=\"/url\" title=\"title\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_562() {
+        test("[*foo* bar][]\n\n[*foo* bar]: /url \"title\"\n", "<p><a href=\"/url\" title=\"title\"><em>foo</em> bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_563() {
+        test("[Foo][]\n\n[foo]: /url \"title\"\n", "<p><a href=\"/url\" title=\"title\">Foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_564() {
+        test("[foo] \n[]\n\n[foo]: /url \"title\"\n", "<p><a href=\"/url\" title=\"title\">foo</a>[]</p>");
+    }
+
+    #[test]
+    fn gfm_test_565() {
+        test("[foo]\n\n[foo]: /url \"title\"\n", "<p><a href=\"/url\" title=\"title\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_566() {
+        test("[*foo* bar]\n\n[*foo* bar]: /url \"title\"\n", "<p><a href=\"/url\" title=\"title\"><em>foo</em> bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_567() {
+        test("[[*foo* bar]]\n\n[*foo* bar]: /url \"title\"\n", "<p>[<a href=\"/url\" title=\"title\"><em>foo</em> bar</a>]</p>");
+    }
+
+    #[test]
+    fn gfm_test_568() {
+        test("[[bar [foo]\n\n[foo]: /url\n", "<p>[[bar <a href=\"/url\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_569() {
+        test("[Foo]\n\n[foo]: /url \"title\"\n", "<p><a href=\"/url\" title=\"title\">Foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_570() {
+        test("[foo] bar\n\n[foo]: /url\n", "<p><a href=\"/url\">foo</a> bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_571() {
+        test("\\[foo]\n\n[foo]: /url \"title\"\n", "<p>[foo]</p>");
+    }
+
+    #[test]
+    fn gfm_test_572() {
+        test("[foo*]: /url\n\n*[foo*]\n", "<p>*<a href=\"/url\">foo*</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_573() {
+        test("[foo][bar]\n\n[foo]: /url1\n[bar]: /url2\n", "<p><a href=\"/url2\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_574() {
+        test("[foo][]\n\n[foo]: /url1\n", "<p><a href=\"/url1\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_575() {
+        test("[foo]()\n\n[foo]: /url1\n", "<p><a href=\"\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_576() {
+        test("[foo](not a link)\n\n[foo]: /url1\n", "<p><a href=\"/url1\">foo</a>(not a link)</p>");
+    }
+
+    #[test]
+    fn gfm_test_577() {
+        test("[foo][bar][baz]\n\n[baz]: /url\n", "<p>[foo]<a href=\"/url\">bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_578() {
+        test("[foo][bar][baz]\n\n[baz]: /url1\n[bar]: /url2\n", "<p><a href=\"/url2\">foo</a><a href=\"/url1\">baz</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_579() {
+        test("[foo][bar][baz]\n\n[baz]: /url1\n[foo]: /url2\n", "<p>[foo]<a href=\"/url1\">bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_580() {
+        test("![foo](/url \"title\")\n", "<p><img src=\"/url\" alt=\"foo\" title=\"title\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_581() {
+        test("![foo *bar*]\n\n[foo *bar*]: train.jpg \"train & tracks\"\n", "<p><img src=\"train.jpg\" alt=\"foo bar\" title=\"train &amp; tracks\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_582() {
+        test("![foo ![bar](/url)](/url2)\n", "<p><img src=\"/url2\" alt=\"foo bar\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_583() {
+        test("![foo [bar](/url)](/url2)\n", "<p><img src=\"/url2\" alt=\"foo bar\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_584() {
+        test("![foo *bar*][]\n\n[foo *bar*]: train.jpg \"train & tracks\"\n", "<p><img src=\"train.jpg\" alt=\"foo bar\" title=\"train &amp; tracks\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_585() {
+        test("![foo *bar*][foobar]\n\n[FOOBAR]: train.jpg \"train & tracks\"\n", "<p><img src=\"train.jpg\" alt=\"foo bar\" title=\"train &amp; tracks\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_586() {
+        test("![foo](train.jpg)\n", "<p><img src=\"train.jpg\" alt=\"foo\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_587() {
+        test("My ![foo bar](/path/to/train.jpg  \"title\"   )\n", "<p>My <img src=\"/path/to/train.jpg\" alt=\"foo bar\" title=\"title\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_588() {
+        test("![foo](<url>)\n", "<p><img src=\"url\" alt=\"foo\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_589() {
+        test("![](/url)\n", "<p><img src=\"/url\" alt=\"\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_590() {
+        test("![foo][bar]\n\n[bar]: /url\n", "<p><img src=\"/url\" alt=\"foo\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_591() {
+        test("![foo][bar]\n\n[BAR]: /url\n", "<p><img src=\"/url\" alt=\"foo\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_592() {
+        test("![foo][]\n\n[foo]: /url \"title\"\n", "<p><img src=\"/url\" alt=\"foo\" title=\"title\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_593() {
+        test("![*foo* bar][]\n\n[*foo* bar]: /url \"title\"\n", "<p><img src=\"/url\" alt=\"foo bar\" title=\"title\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_594() {
+        test("![Foo][]\n\n[foo]: /url \"title\"\n", "<p><img src=\"/url\" alt=\"Foo\" title=\"title\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_595() {
+        test("![foo] \n[]\n\n[foo]: /url \"title\"\n", "<p><img src=\"/url\" alt=\"foo\" title=\"title\" />[]</p>");
+    }
+
+    #[test]
+    fn gfm_test_596() {
+        test("![foo]\n\n[foo]: /url \"title\"\n", "<p><img src=\"/url\" alt=\"foo\" title=\"title\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_597() {
+        test("![*foo* bar]\n\n[*foo* bar]: /url \"title\"\n", "<p><img src=\"/url\" alt=\"foo bar\" title=\"title\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_598() {
+        test("![[foo]]\n\n[[foo]]: /url \"title\"\n", "<p>![[foo]]</p><p>[[foo]]: /url &quot;title&quot;</p>");
+    }
+
+    #[test]
+    fn gfm_test_599() {
+        test("![Foo]\n\n[foo]: /url \"title\"\n", "<p><img src=\"/url\" alt=\"Foo\" title=\"title\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_600() {
+        test("!\\[foo]\n\n[foo]: /url \"title\"\n", "<p>![foo]</p>");
+    }
+
+    #[test]
+    fn gfm_test_601() {
+        test("\\![foo]\n\n[foo]: /url \"title\"\n", "<p>!<a href=\"/url\" title=\"title\">foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_602() {
+        test("<http://foo.bar.baz>\n", "<p><a href=\"http://foo.bar.baz\">http://foo.bar.baz</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_603() {
+        test("<http://foo.bar.baz/test?q=hello&id=22&boolean>\n", "<p><a href=\"http://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean\">http://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_604() {
+        test("<irc://foo.bar:2233/baz>\n", "<p><a href=\"irc://foo.bar:2233/baz\">irc://foo.bar:2233/baz</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_605() {
+        test("<MAILTO:FOO@BAR.BAZ>\n", "<p><a href=\"MAILTO:FOO@BAR.BAZ\">MAILTO:FOO@BAR.BAZ</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_606() {
+        test("<a+b+c:d>\n", "<p><a href=\"a+b+c:d\">a+b+c:d</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_607() {
+        test("<made-up-scheme://foo,bar>\n", "<p><a href=\"made-up-scheme://foo,bar\">made-up-scheme://foo,bar</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_608() {
+        test("<http://../>\n", "<p><a href=\"http://../\">http://../</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_609() {
+        test("<localhost:5001/foo>\n", "<p><a href=\"localhost:5001/foo\">localhost:5001/foo</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_610() {
+        test("<http://foo.bar/baz bim>\n", "<p>&lt;http://foo.bar/baz bim&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_611() {
+        test("<http://example.com/\\[\\>\n", "<p><a href=\"http://example.com/%5C%5B%5C\">http://example.com/\\[\\</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_612() {
+        test("<foo@bar.example.com>\n", "<p><a href=\"mailto:foo@bar.example.com\">foo@bar.example.com</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_613() {
+        test("<foo+special@Bar.baz-bar0.com>\n", "<p><a href=\"mailto:foo+special@Bar.baz-bar0.com\">foo+special@Bar.baz-bar0.com</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_614() {
+        test("<foo\\+@bar.example.com>\n", "<p>&lt;foo+@bar.example.com&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_615() {
+        test("<>\n", "<p>&lt;&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_616() {
+        test("< http://foo.bar >\n", "<p>&lt; http://foo.bar &gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_617() {
+        test("<m:abc>\n", "<p>&lt;m:abc&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_618() {
+        test("<foo.bar.baz>\n", "<p>&lt;foo.bar.baz&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_619() {
+        test("http://example.com\n", "<p>http://example.com</p>");
+    }
+
+    #[test]
+    fn gfm_test_620() {
+        test("foo@bar.example.com\n", "<p>foo@bar.example.com</p>");
+    }
+
+    #[test]
+    fn gfm_test_621() {
+        test("www.commonmark.org\n", "<p><a href=\"http://www.commonmark.org\">www.commonmark.org</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_622() {
+        test("Visit www.commonmark.org/help for more information.\n", "<p>Visit <a href=\"http://www.commonmark.org/help\">www.commonmark.org/help</a> for more information.</p>");
+    }
+
+    #[test]
+    fn gfm_test_623() {
+        test("Visit www.commonmark.org.\n\nVisit www.commonmark.org/a.b.\n", "<p>Visit <a href=\"http://www.commonmark.org\">www.commonmark.org</a>.</p><p>Visit <a href=\"http://www.commonmark.org/a.b\">www.commonmark.org/a.b</a>.</p>");
+    }
+
+    #[test]
+    fn gfm_test_624() {
+        test("www.google.com/search?q=Markup+(business)\n\nwww.google.com/search?q=Markup+(business)))\n\n(www.google.com/search?q=Markup+(business))\n\n(www.google.com/search?q=Markup+(business)\n", "<p><a href=\"http://www.google.com/search?q=Markup+(business)\">www.google.com/search?q=Markup+(business)</a></p><p><a href=\"http://www.google.com/search?q=Markup+(business)\">www.google.com/search?q=Markup+(business)</a>))</p><p>(<a href=\"http://www.google.com/search?q=Markup+(business)\">www.google.com/search?q=Markup+(business)</a>)</p><p>(<a href=\"http://www.google.com/search?q=Markup+(business)\">www.google.com/search?q=Markup+(business)</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_625() {
+        test("www.google.com/search?q=(business))+ok\n", "<p><a href=\"http://www.google.com/search?q=(business))+ok\">www.google.com/search?q=(business))+ok</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_626() {
+        test("www.google.com/search?q=commonmark&hl=en\n\nwww.google.com/search?q=commonmark&hl;\n", "<p><a href=\"http://www.google.com/search?q=commonmark&amp;hl=en\">www.google.com/search?q=commonmark&amp;hl=en</a></p><p><a href=\"http://www.google.com/search?q=commonmark\">www.google.com/search?q=commonmark</a>&amp;hl;</p>");
+    }
+
+    #[test]
+    fn gfm_test_627() {
+        test("www.commonmark.org/he<lp\n", "<p><a href=\"http://www.commonmark.org/he\">www.commonmark.org/he</a>&lt;lp</p>");
+    }
+
+    #[test]
+    fn gfm_test_628() {
+        test("http://commonmark.org\n\n(Visit https://encrypted.google.com/search?q=Markup+(business))\n\nAnonymous FTP is available at ftp://foo.bar.baz.\n", "<p><a href=\"http://commonmark.org\">http://commonmark.org</a></p><p>(Visit <a href=\"https://encrypted.google.com/search?q=Markup+(business)\">https://encrypted.google.com/search?q=Markup+(business)</a>)</p><p>Anonymous FTP is available at <a href=\"ftp://foo.bar.baz\">ftp://foo.bar.baz</a>.</p>");
+    }
+
+    #[test]
+    fn gfm_test_629() {
+        test("foo@bar.baz\n", "<p><a href=\"mailto:foo@bar.baz\">foo@bar.baz</a></p>");
+    }
+
+    #[test]
+    fn gfm_test_630() {
+        test("hello@mail+xyz.example isn't valid, but hello+xyz@mail.example is.\n", "<p>hello@mail+xyz.example isn't valid, but <a href=\"mailto:hello+xyz@mail.example\">hello+xyz@mail.example</a> is.</p>");
+    }
+
+    #[test]
+    fn gfm_test_631() {
+        test("a.b-c_d@a.b\n\na.b-c_d@a.b.\n\na.b-c_d@a.b-\n\na.b-c_d@a.b_\n", "<p><a href=\"mailto:a.b-c_d@a.b\">a.b-c_d@a.b</a></p><p><a href=\"mailto:a.b-c_d@a.b\">a.b-c_d@a.b</a>.</p><p>a.b-c_d@a.b-</p><p>a.b-c_d@a.b_</p>");
+    }
+
+    #[test]
+    fn gfm_test_632() {
+        test("<a><bab><c2c>\n", "<p><a><bab><c2c></p>");
+    }
+
+    #[test]
+    fn gfm_test_633() {
+        test("<a/><b2/>\n", "<p><a/><b2/></p>");
+    }
+
+    #[test]
+    fn gfm_test_634() {
+        test("<a  /><b2\ndata=\"foo\" >\n", "<p><a  /><b2\ndata=\"foo\" ></p>");
+    }
+
+    #[test]
+    fn gfm_test_635() {
+        test("<a foo=\"bar\" bam = 'baz <em>\"</em>'\n_boolean zoop:33=zoop:33 />\n", "<p><a foo=\"bar\" bam = 'baz <em>\"</em>'\n_boolean zoop:33=zoop:33 /></p>");
+    }
+
+    #[test]
+    fn gfm_test_636() {
+        test("Foo <responsive-image src=\"foo.jpg\" />\n", "<p>Foo <responsive-image src=\"foo.jpg\" /></p>");
+    }
+
+    #[test]
+    fn gfm_test_637() {
+        test("<33> <__>\n", "<p>&lt;33&gt; &lt;__&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_638() {
+        test("<a h*#ref=\"hi\">\n", "<p>&lt;a h*#ref=&quot;hi&quot;&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_639() {
+        test("<a href=\"hi'> <a href=hi'>\n", "<p>&lt;a href=&quot;hi'&gt; &lt;a href=hi'&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_640() {
+        test("< a><\nfoo><bar/ >\n<foo bar=baz\nbim!bop />\n", "<p>&lt; a&gt;&lt;\nfoo&gt;&lt;bar/ &gt;\n&lt;foo bar=baz\nbim!bop /&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_641() {
+        test("<a href='bar'title=title>\n", "<p>&lt;a href='bar'title=title&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_642() {
+        test("</a></foo >\n", "<p></a></foo ></p>");
+    }
+
+    #[test]
+    fn gfm_test_643() {
+        test("</a href=\"foo\">\n", "<p>&lt;/a href=&quot;foo&quot;&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_644() {
+        test("foo <!-- this is a\ncomment - with hyphen -->\n", "<p>foo <!-- this is a\ncomment - with hyphen --></p>");
+    }
+
+    #[test]
+    fn gfm_test_645() {
+        test("foo <!-- not a comment -- two hyphens -->\n", "<p>foo &lt;!-- not a comment -- two hyphens --&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_646() {
+        test("foo <!--> foo -->\n\nfoo <!-- foo--->\n", "<p>foo &lt;!--&gt; foo --&gt;</p><p>foo &lt;!-- foo---&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_647() {
+        test("foo <?php echo $a; ?>\n", "<p>foo <?php echo $a; ?></p>");
+    }
+
+    #[test]
+    fn gfm_test_648() {
+        test("foo <!ELEMENT br EMPTY>\n", "<p>foo <!ELEMENT br EMPTY></p>");
+    }
+
+    #[test]
+    fn gfm_test_649() {
+        test("foo <![CDATA[>&<]]>\n", "<p>foo <![CDATA[>&<]]></p>");
+    }
+
+    #[test]
+    fn gfm_test_650() {
+        test("foo <a href=\"&ouml;\">\n", "<p>foo <a href=\"&ouml;\"></p>");
+    }
+
+    #[test]
+    fn gfm_test_651() {
+        test("foo <a href=\"\\*\">\n", "<p>foo <a href=\"\\*\"></p>");
+    }
+
+    #[test]
+    fn gfm_test_652() {
+        test("<a href=\"\\\"\">\n", "<p>&lt;a href=&quot;&quot;&quot;&gt;</p>");
+    }
+
+    #[test]
+    fn gfm_test_653() {
+        test("<strong> <title> <style> <em>\n\n<blockquote>\n  <xmp> is disallowed.  <XMP> is also disallowed.\n</blockquote>\n", "<p><strong> &lt;title> &lt;style> <em></p><blockquote>  &lt;xmp> is disallowed.  &lt;XMP> is also disallowed.</blockquote>");
+    }
+
+    #[test]
+    fn gfm_test_654() {
+        test("foo  \nbaz\n", "<p>foo<br />baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_655() {
+        test("foo\\\nbaz\n", "<p>foo<br />baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_656() {
+        test("foo       \nbaz\n", "<p>foo<br />baz</p>");
+    }
+
+    #[test]
+    fn gfm_test_657() {
+        test("foo  \n     bar\n", "<p>foo<br />bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_658() {
+        test("foo\\\n     bar\n", "<p>foo<br />bar</p>");
+    }
+
+    #[test]
+    fn gfm_test_659() {
+        test("*foo  \nbar*\n", "<p><em>foo<br />bar</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_660() {
+        test("*foo\\\nbar*\n", "<p><em>foo<br />bar</em></p>");
+    }
+
+    #[test]
+    fn gfm_test_661() {
+        test("`code  \nspan`\n", "<p><code>code   span</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_662() {
+        test("`code\\\nspan`\n", "<p><code>code\\ span</code></p>");
+    }
+
+    #[test]
+    fn gfm_test_663() {
+        test("<a href=\"foo  \nbar\">\n", "<p><a href=\"foo  \nbar\"></p>");
+    }
+
+    #[test]
+    fn gfm_test_664() {
+        test("<a href=\"foo\\\nbar\">\n", "<p><a href=\"foo\\\nbar\"></p>");
+    }
+
+    #[test]
+    fn gfm_test_665() {
+        test("foo\\\n", "<p>foo\\</p>");
+    }
+
+    #[test]
+    fn gfm_test_666() {
+        test("foo  \n", "<p>foo</p>");
+    }
+
+    #[test]
+    fn gfm_test_667() {
+        test("### foo\\\n", "<h3>foo\\</h3>");
+    }
+
+    #[test]
+    fn gfm_test_668() {
+        test("### foo  \n", "<h3>foo</h3>");
+    }
+
+    #[test]
+    fn gfm_test_669() {
+        test("foo\nbaz\n", "<p>foo\nbaz</p>");
+    }
+
+    #[test]
+    fn gfm_test_670() {
+        test("foo \n baz\n", "<p>foo\nbaz</p>");
+    }
+
+    #[test]
+    fn gfm_test_671() {
+        test("hello $.;'there\n", "<p>hello $.;'there</p>");
+    }
+
+    #[test]
+    fn gfm_test_672() {
+        test("Foo χρῆν\n", "<p>Foo χρῆν</p>");
+    }
+
+    #[test]
+    fn gfm_test_673() {
+        test("Multiple     spaces\n", "<p>Multiple     spaces</p>");
+    }

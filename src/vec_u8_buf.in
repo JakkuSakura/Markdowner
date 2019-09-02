@@ -1,0 +1,21 @@
+
+impl Buf for Vec<u8> {
+    fn push_vec(&mut self, s: &InnerBuffer) {
+        for e in s {
+            self.push(*e);
+        }
+    }
+    fn push_str(&mut self, s: &str) {
+        for e in s.as_bytes() {
+            self.push(*e);
+        }
+    }
+
+    fn push_char(&mut self, ch: char) {
+        self.push(ch as InnerByte)
+    }
+
+    fn push(&mut self, ch: u8) {
+        self.push(ch);
+    }
+}
